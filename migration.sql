@@ -1,18 +1,23 @@
 CREATE TABLE
     users (
         id smallint not null auto_increment,
-        firstName varchar(255) not null,
-        lastName varchar(255) not null,
-        nick varchar(255) not null,
+        first_name varchar(255) not null,
+        last_name varchar(255) not null,
+        username varchar(255) not null,
         password varchar(255) not null,
-        avatar varchar(255) not null,
-        description varchar(255) not null,
+        avatar varchar(255),
+        description varchar(255),
         primary key (id)
     );
 
 CREATE TABLE
     posts (
         id smallint not null auto_increment,
+        user_id smallint not null,
+        category_id smallint not null,
+        date date not null,
+        content JSON,
+        foreign key (user_id) references users (id) on delete cascade,
         primary key (id)
     );
 
@@ -58,3 +63,6 @@ CREATE TABLE
         foreign key (user_id) references users (id) on delete no action,
         foreign key (post_id) references posts (id) on delete cascade,
     );
+
+-- CREATE TABLE
+--     category ();

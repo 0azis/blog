@@ -7,6 +7,8 @@ type UserRepository interface {
 	Create(user domain.User) (int, error)
 	// GetByID get user by its ID
 	GetByID(iD int) (domain.User, error)
-	// GetByNick get user by its nick
-	GetByNick(nick string) (domain.User, error)
+	// GetByusername get user by its username
+	GetByUsername(username string) (domain.User, error)
+	// GetByusername get user by its username
+	Search(q string, limit, page int) ([]domain.User, error)
 }

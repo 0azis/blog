@@ -3,6 +3,7 @@ package store
 import (
 	"blog/internal/core/port/repository"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -11,12 +12,10 @@ type Store struct {
 }
 
 func NewStore(uri string) (*Store, error) {
-	store := new(Store)
+	db, err := sqlx.Connect("mysql", uri)
 
-	_, err := sqlx.Connect("pgx", uri)
-	// if err != nil {
-	// 	return store, err
-	// }
-
+	store := &Store{
+		user{db},
+	}
 	return store, err
 }

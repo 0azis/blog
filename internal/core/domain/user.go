@@ -1,13 +1,13 @@
 package domain
 
 type User struct {
-	ID          int
-	FirstName   string
-	LastName    string
-	Nick        string
-	Password    string
-	Avatar      string
-	Description string
+	ID          int     `json:"-" db:"id"`
+	FirstName   string  `json:"firstName" db:"first_name"`
+	LastName    string  `json:"lastName" db:"last_name"`
+	Username    string  `json:"username" db:"username"`
+	Password    string  `json:"-" db:"password"`
+	Avatar      *string `json:"avatar" db:"avatar"`
+	Description *string `json:"description" db:"description"`
 }
 
 func (u User) FullName() string {
@@ -15,13 +15,13 @@ func (u User) FullName() string {
 }
 
 type SignUpCredentials struct {
-	LastName  string
-	FirstName string
-	Nick      string
-	Password  string
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Username  string `json:"username"`
+	Password  string `json:"password"`
 }
 
 type SignInCredentials struct {
-	Nick     string
-	Password string
+	Username string `json:"username"`
+	Password string `json:"password"`
 }

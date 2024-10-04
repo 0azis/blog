@@ -15,8 +15,11 @@ func InitRoutes(r *gin.Engine, store *store.Store) {
 }
 
 func userRoutes(r *gin.RouterGroup, store *store.Store) {
+	user := r.Group("/user")
 	controllers := controller.NewUserControllers(store)
 
-	r.POST("/signin", controllers.SignIn)
-	r.POST("/signup", controllers.SignUp)
+	user.POST("/signin", controllers.SignIn)
+	user.POST("/signup", controllers.SignUp)
+	user.GET("/profile", controllers.Profile)
+	user.GET("/search", controllers.Search)
 }

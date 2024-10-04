@@ -15,9 +15,8 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-		"/signin":{
-			"post": {
-                "description": "sign in your profile",
+        "/user/profile": {
+            "get": {
                 "consumes": [
                     "application/json"
                 ],
@@ -25,57 +24,173 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "auth"
+                    "user"
                 ],
-                "parameters": [
-                    {
-                        "description": "Add account",
-                        "name": "account",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/core.domain.SignInCredentials"
-                        }
-                    }
-                ],
+                "summary": "Get a profile",
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "status\": 201, \"message\": \"Created\", \"data\": string}",
                         "schema": {
-                            "$ref": "#/definitions/model.Account"
+                            "type": "json"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "status\": 400, \"message\": \"Bad Request\", \"data\": null}",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "json"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
+                    "409": {
+                        "description": "status\": 409, \"message\": \"Conflict\", \"data\": null}",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "json"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "status\": 500, \"message\": \"Internal Server Error\", \"data\": null}",
                         "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError"
+                            "type": "json"
                         }
                     }
                 }
             }
-		},
-	}
+        },
+        "/user/search": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Search users from query",
+                "responses": {
+                    "201": {
+                        "description": "status\": 201, \"message\": \"Created\", \"data\": string}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "400": {
+                        "description": "status\": 400, \"message\": \"Bad Request\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "409": {
+                        "description": "status\": 409, \"message\": \"Conflict\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "500": {
+                        "description": "status\": 500, \"message\": \"Internal Server Error\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/signin": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Sign in to the account",
+                "responses": {
+                    "200": {
+                        "description": "status\": 200, \"message\": \"OK\", \"data\": string}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "400": {
+                        "description": "status\": 400, \"message\": \"Bad Request\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "401": {
+                        "description": "status\": 401, \"message\": \"Unauthorized\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "404": {
+                        "description": "status\": 404, \"message\": \"Not Found\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "500": {
+                        "description": "status\": 500, \"message\": \"Internal Server Error\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/signup": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create an account",
+                "responses": {
+                    "201": {
+                        "description": "status\": 201, \"message\": \"Created\", \"data\": string}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "400": {
+                        "description": "status\": 400, \"message\": \"Bad Request\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "409": {
+                        "description": "status\": 409, \"message\": \"Conflict\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "500": {
+                        "description": "status\": 500, \"message\": \"Internal Server Error\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "v1",
+	Version:          "1.0",
 	Host:             "localhost:8000",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "The API of blog",
+	Title:            "Blog API",
 	Description:      "",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

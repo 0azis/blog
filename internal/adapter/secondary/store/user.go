@@ -12,18 +12,29 @@ type user struct {
 
 func (u user) Create(user domain.User) (int, error) {
 	var userID int
-	err := u.db.Get(&userID, `insert into users (firstName, lastName, nick, password) values ($1, $2, $3, $4)`, user.FirstName, user.LastName, user.Nick, user.Password)
+	sqlResult, err := u.db.Exec(`insert into users (first_name, last_name, username, password) values (?, ?, ?, ?)`, user.FirstName, user.LastName, user.Username, user.Password)
+	if err != nil {
+		return userID, err
+	}
+	lastID, err := sqlResult.LastInsertId()
+	userID = int(lastID)
 	return userID, err
 }
 
 func (u user) GetByID(ID int) (domain.User, error) {
 	resultUser := domain.User{}
-	err := u.db.Get(&resultUser, `select * from users where id = $1`, ID)
+	err := u.db.Get(&resultUser, `select * from users where id = ?`, ID)
 	return resultUser, err
 }
 
-func (u user) GetByNick(nick string) (domain.User, error) {
+func (u user) GetByUsername(username string) (domain.User, error) {
 	resultUser := domain.User{}
-	err := u.db.Get(&resultUser, `select * from users where nick = $1`, nick)
+	err := u.db.Get(&resultUser, `select * from users where username = ?`, username)
+	return resultUser, err
+}
+
+func (u user) Search(q string, limit, page int) ([]domain.User, error) {
+	resultUser := []domain.User{}
+	err := u.db.Select(&resultUser, `select * from users where lower(username) LIKE lower(?) or lower(first_name) like lower(?) or lower(last_name) like lower(?) limit ? offset ?`, q, q, q, limit, page)
 	return resultUser, err
 }

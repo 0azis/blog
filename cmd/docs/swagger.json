@@ -1,7 +1,178 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "title": "Blog API",
+        "contact": {},
+        "version": "1.0"
     },
-    "paths": {}
+    "host": "localhost:8000",
+    "basePath": "/api/v1",
+    "paths": {
+        "/user/profile": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Get a profile",
+                "responses": {
+                    "201": {
+                        "description": "status\": 201, \"message\": \"Created\", \"data\": string}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "400": {
+                        "description": "status\": 400, \"message\": \"Bad Request\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "409": {
+                        "description": "status\": 409, \"message\": \"Conflict\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "500": {
+                        "description": "status\": 500, \"message\": \"Internal Server Error\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/search": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Search users from query",
+                "responses": {
+                    "201": {
+                        "description": "status\": 201, \"message\": \"Created\", \"data\": string}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "400": {
+                        "description": "status\": 400, \"message\": \"Bad Request\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "409": {
+                        "description": "status\": 409, \"message\": \"Conflict\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "500": {
+                        "description": "status\": 500, \"message\": \"Internal Server Error\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/signin": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Sign in to the account",
+                "responses": {
+                    "200": {
+                        "description": "status\": 200, \"message\": \"OK\", \"data\": string}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "400": {
+                        "description": "status\": 400, \"message\": \"Bad Request\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "401": {
+                        "description": "status\": 401, \"message\": \"Unauthorized\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "404": {
+                        "description": "status\": 404, \"message\": \"Not Found\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "500": {
+                        "description": "status\": 500, \"message\": \"Internal Server Error\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/signup": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Create an account",
+                "responses": {
+                    "201": {
+                        "description": "status\": 201, \"message\": \"Created\", \"data\": string}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "400": {
+                        "description": "status\": 400, \"message\": \"Bad Request\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "409": {
+                        "description": "status\": 409, \"message\": \"Conflict\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    },
+                    "500": {
+                        "description": "status\": 500, \"message\": \"Internal Server Error\", \"data\": null}",
+                        "schema": {
+                            "type": "json"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
