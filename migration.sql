@@ -1,10 +1,10 @@
 CREATE TABLE
     users (
         id smallint not null auto_increment,
-        first_name varchar(255) not null,
-        last_name varchar(255) not null,
+        email varchar(255) not null,
         username varchar(255) not null,
         password varchar(255) not null,
+        name varchar(255),
         avatar varchar(255),
         description varchar(255),
         primary key (id)
