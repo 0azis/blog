@@ -53,14 +53,14 @@ func (uc userControllers) SignIn(c *gin.Context) {
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
-	// refreshToken, err := utils.SignJWT(dbUser.ID)
-	// if err != nil {
-	// 	c.JSON(500, utils.Error(500, nil))
-	// 	return
-	// }
+	// // refreshToken, err := utils.SignJWT(dbUser.ID)
+	// // if err != nil {
+	// // 	c.JSON(500, utils.Error(500, nil))
+	// // 	return
+	// // }
 
-	// c.SetCookie("refresh_token", refreshToken, 6, "/", "localhost", false, true)
-	c.SetCookie("gin_cookie", "test", 3600, "/", "localhost", false, true)
+	// // c.SetCookie("refresh_token", refreshToken, 6, "/", "localhost", false, true)
+	// c.SetCookie("gin_cookie", "test", 3600, "/", "localhost", false, true)
 
 	c.JSON(200, utils.Error(200, accessToken))
 }

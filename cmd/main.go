@@ -23,7 +23,7 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load("../.envprod"); err != nil {
+	if err := godotenv.Load("../.env"); err != nil {
 		fmt.Println(err)
 		slog.Error("environment not found...")
 	}
