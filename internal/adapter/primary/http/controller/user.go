@@ -95,6 +95,7 @@ func (uc userControllers) SignUp(c *gin.Context) {
 		c.JSON(409, utils.Error(
 			409, "Username already exists",
 		))
+		return
 	}
 
 	hash, err := utils.Encode([]byte(credentials.Password))
@@ -187,7 +188,6 @@ func (uc userControllers) Search(c *gin.Context) {
 	search_query := "%" + query + "%"
 
 	query_users, err := uc.store.User.Search(search_query, limit, page)
-	fmt.Println(query_users)
 	if err != nil {
 		c.JSON(500, utils.Error(500, nil))
 		return
