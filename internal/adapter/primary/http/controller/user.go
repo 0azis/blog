@@ -37,7 +37,7 @@ func (uc userControllers) SignIn(c *gin.Context) {
 		return
 	}
 
-	dbUser, _ := uc.store.User.GetByUsername(credentials.Username)
+	dbUser, _ := uc.store.User.GetByLogin(credentials.Login)
 	if dbUser.ID == 0 {
 		c.JSON(404, utils.Error(404, nil))
 		return
@@ -84,10 +84,17 @@ func (uc userControllers) SignUp(c *gin.Context) {
 		return
 	}
 
-	dbUser, _ := uc.store.User.GetByUsername(credentials.Username)
-	if dbUser.Username != "" {
-		c.JSON(409, utils.Error(409, nil))
+	dbUser, _ := uc.store.User.CheckCredentials(credentials.Email, credentials.Username)
+	if dbUser.Email == credentials.Email {
+		c.JSON(409, utils.Error(
+			409, "Email already exists",
+		))
 		return
+	}
+	if dbUser.Username == credentials.Username {
+		c.JSON(409, utils.Error(
+			409, "Username already exists",
+		))
 	}
 
 	hash, err := utils.Encode([]byte(credentials.Password))
@@ -98,10 +105,9 @@ func (uc userControllers) SignUp(c *gin.Context) {
 	}
 
 	newUser := domain.User{
-		FirstName: credentials.FirstName,
-		LastName:  credentials.LastName,
-		Username:  credentials.Username,
-		Password:  string(hash),
+		Email:    credentials.Email,
+		Username: credentials.Username,
+		Password: string(hash),
 	}
 
 	userID, err := uc.store.User.Create(newUser)
