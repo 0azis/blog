@@ -43,7 +43,7 @@ type database struct {
 }
 
 func (d database) BuildURI() string {
-	uri := fmt.Sprintf("%s:%s@(%s:%s)/%s", d.user, d.password, d.host, d.port, d.nameDB)
+	uri := fmt.Sprintf("%s:%s@(%s:%s)/%s?parseTime=true", d.user, d.password, d.host, d.port, d.nameDB)
 	return uri
 }
 

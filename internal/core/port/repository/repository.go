@@ -14,3 +14,16 @@ type UserRepository interface {
 	// GetByusername get user by its username
 	Search(q string, limit, page int) ([]domain.User, error)
 }
+
+type PostRepositoty interface {
+	// Create a post in the database
+	Create(post domain.PostCredentials) (int, error)
+	// GetAll
+	GetAll() ([]domain.UserPost, error)
+	// GetOne
+	GetOne(postID int) (domain.UserPost, error)
+	// Publish
+	Publish(postID, userID int) error
+	// Update
+	Update(postID int, post domain.PostCredentials) error
+}

@@ -11,14 +11,12 @@ type user struct {
 }
 
 func (u user) Create(user domain.User) (int, error) {
-	var userID int
 	sqlResult, err := u.db.Exec(`insert into users (email, username, password) values (?, ?, ?)`, user.Email, user.Username, user.Password)
 	if err != nil {
-		return userID, err
+		return 0, err
 	}
-	lastID, err := sqlResult.LastInsertId()
-	userID = int(lastID)
-	return userID, err
+	userID, err := sqlResult.LastInsertId()
+	return int(userID), err
 }
 
 func (u user) GetByID(ID int) (domain.User, error) {

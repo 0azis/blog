@@ -21,8 +21,9 @@ func Error(status int, data any) Response {
 	}
 }
 
-func ExtractToken(context *gin.Context) string {
+func ExtractID(context *gin.Context) int {
 	bearer := context.Request.Header.Get("Authorization")
-	jwtToken := strings.Split(bearer, " ")
-	return jwtToken[1]
+	token := strings.Split(bearer, " ")[1]
+	payload, _ := GetIdentity(token)
+	return payload.UserID
 }

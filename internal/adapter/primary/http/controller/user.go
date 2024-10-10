@@ -14,7 +14,7 @@ import (
 )
 
 type userControllers struct {
-	store *store.Store
+	store store.Store
 }
 
 // SignIn godoc
@@ -48,21 +48,15 @@ func (uc userControllers) SignIn(c *gin.Context) {
 		return
 	}
 
-	accessToken, err := utils.SignJWT(dbUser.ID)
+	jwts, err := utils.NewJWT(dbUser.ID)
 	if err != nil {
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
-	// // refreshToken, err := utils.SignJWT(dbUser.ID)
-	// // if err != nil {
-	// // 	c.JSON(500, utils.Error(500, nil))
-	// // 	return
-	// // }
 
-	// // c.SetCookie("refresh_token", refreshToken, 6, "/", "localhost", false, true)
-	// c.SetCookie("gin_cookie", "test", 3600, "/", "localhost", false, true)
+	c.SetCookie("auth", jwts.Refresh, 3600, "/", "localhost", false, false)
 
-	c.JSON(200, utils.Error(200, accessToken))
+	c.JSON(200, utils.Error(200, jwts.Access))
 }
 
 // SignUp godoc
@@ -118,14 +112,15 @@ func (uc userControllers) SignUp(c *gin.Context) {
 		return
 	}
 
-	jwt, err := utils.SignJWT(userID)
+	jwts, err := utils.NewJWT(userID)
 	if err != nil {
-		fmt.Println(err)
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
 
-	c.JSON(201, utils.Error(201, jwt))
+	c.SetCookie("auth", jwts.Refresh, 3600, "/", "localhost", false, false)
+
+	c.JSON(201, utils.Error(201, jwts.Access))
 }
 
 // Profile godoc
@@ -140,12 +135,7 @@ func (uc userControllers) SignUp(c *gin.Context) {
 //	@Success	201	{json}	{"status": 201, "message": "Created", "data": string}
 //	@Router		/user/profile [get]
 func (uc userControllers) Profile(c *gin.Context) {
-	clientToken := utils.ExtractToken(c)
-	ID, err := utils.GetIdentity(clientToken)
-	if err != nil {
-		c.JSON(500, utils.Error(500, nil))
-		return
-	}
+	ID := utils.ExtractID(c)
 
 	user, _ := uc.store.User.GetByID(ID)
 	if user.ID == 0 {
@@ -196,6 +186,19 @@ func (uc userControllers) Search(c *gin.Context) {
 	c.JSON(200, utils.Error(200, query_users))
 }
 
-func NewUserControllers(store *store.Store) service.UserControllers {
+func (uc userControllers) RefreshTokens(c *gin.Context) {
+	userID := utils.ExtractID(c)
+	jwts, err := utils.NewJWT(userID)
+	if err != nil {
+		c.JSON(500, utils.Error(500, nil))
+		return
+	}
+
+	c.SetCookie("auth", jwts.Refresh, 3600, "/", "localhost", false, false)
+
+	c.JSON(200, utils.Error(200, jwts.Access))
+}
+
+func NewUserControllers(store store.Store) service.UserControllers {
 	return userControllers{store}
 }

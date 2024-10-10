@@ -10,7 +10,7 @@ import (
 	"blog/internal/adapter/primary/http"
 	"blog/internal/adapter/secondary/store"
 	"blog/internal/config"
-	"fmt"
+	"flag"
 	"log/slog"
 	"time"
 
@@ -24,9 +24,17 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load("../.env"); err != nil {
-		fmt.Println(err)
-		slog.Error("environment not found...")
+	devArg := flag.Bool("dev", false, "")
+	flag.Parse()
+
+	if *devArg {
+		if err := godotenv.Load("../build/dev/.env"); err != nil {
+			slog.Error(err.Error())
+		}
+	} else {
+		if err := godotenv.Load("../build/prod/.env"); err != nil {
+			slog.Error(err.Error())
+		}
 	}
 
 	config := config.NewConfig()
@@ -44,7 +52,7 @@ func main() {
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		AllowCredentials: true,
-		MaxAge: 12 * time.Hour,
+		MaxAge:           12 * time.Hour,
 	}
 	r.Use(cors.New(cfg))
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

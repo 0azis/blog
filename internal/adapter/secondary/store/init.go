@@ -9,13 +9,15 @@ import (
 
 type Store struct {
 	User repository.UserRepository
+	Post repository.PostRepositoty
 }
 
-func NewStore(uri string) (*Store, error) {
+func NewStore(uri string) (Store, error) {
 	db, err := sqlx.Connect("mysql", uri)
 
-	store := &Store{
+	store := Store{
 		user{db},
+		post{db},
 	}
 	return store, err
 }
