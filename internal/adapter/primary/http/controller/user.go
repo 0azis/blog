@@ -5,7 +5,7 @@ import (
 	"blog/internal/core/domain"
 	"blog/internal/core/port/service"
 	"blog/internal/core/utils"
-	"fmt"
+	"log/slog"
 	"strconv"
 
 	_ "blog/cmd/docs"
@@ -50,6 +50,7 @@ func (uc userControllers) SignIn(c *gin.Context) {
 
 	jwts, err := utils.NewJWT(dbUser.ID)
 	if err != nil {
+		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
@@ -94,7 +95,7 @@ func (uc userControllers) SignUp(c *gin.Context) {
 
 	hash, err := utils.Encode([]byte(credentials.Password))
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
@@ -107,13 +108,14 @@ func (uc userControllers) SignUp(c *gin.Context) {
 
 	userID, err := uc.store.User.Create(newUser)
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
 
 	jwts, err := utils.NewJWT(userID)
 	if err != nil {
+		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
@@ -179,6 +181,7 @@ func (uc userControllers) Search(c *gin.Context) {
 
 	query_users, err := uc.store.User.Search(search_query, limit, page)
 	if err != nil {
+		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
@@ -190,6 +193,7 @@ func (uc userControllers) RefreshTokens(c *gin.Context) {
 	userID := utils.ExtractID(c)
 	jwts, err := utils.NewJWT(userID)
 	if err != nil {
+		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}

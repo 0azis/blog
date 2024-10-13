@@ -28,11 +28,11 @@ func main() {
 	flag.Parse()
 
 	if *devArg {
-		if err := godotenv.Load("../build/dev/.env"); err != nil {
+		if err := godotenv.Load("../dev/.env"); err != nil {
 			slog.Error(err.Error())
 		}
 	} else {
-		if err := godotenv.Load("../build/prod/.env"); err != nil {
+		if err := godotenv.Load("../.env"); err != nil {
 			slog.Error(err.Error())
 		}
 	}

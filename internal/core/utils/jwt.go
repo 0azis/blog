@@ -6,6 +6,12 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+var (
+	KEY                []byte = []byte("secret")
+	TOKEN_TIME_ACCESS  int64  = 10000
+	TOKEN_TIME_REFRESH int64  = 432000
+)
+
 type tokenPayload struct {
 	UserID         int
 	expirationTime int64
@@ -16,31 +22,20 @@ type JWT struct {
 	Refresh string
 }
 
-// KEY Слово-секрет, нужен для расшифровки токена
-var KEY = []byte("secret")
-
-// TOKEN_TIME_ACCESS Время жизни access токена, срок годности
-var TOKEN_TIME_ACCESS int64 = 1000
-
-// TOKEN_TIME_REFRESH Время жизни refresh токена, срок годности
-var TOKEN_TIME_REFRESH int64 = 432000
-
-// CreateAccessToken Метод создания access токена
 func createAccessToken(userId int) (string, error) {
 	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		// Создаем payload структуру
-		"userID": userId,                                       // UserId для идентификации пользователя
-		"exp":    int64(time.Now().Unix()) + TOKEN_TIME_ACCESS, // expiredTime для безопасности
+		"id": userId,                                       // UserId для идентификации пользователя
+		"e":  int64(time.Now().Unix()) + TOKEN_TIME_ACCESS, // expiredTime для безопасности
 	}).SignedString(KEY)
 	return token, err
 }
 
-// CreateRefreshToken Метод создания refresh токена
 func createRefreshToken(userId int) (string, error) {
 	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		// Создаем payload структуру
-		"userID": userId, // UserId для идентификации пользователя
-		// "exp":    int64(time.Now().Unix()) + TOKEN_TIME_REFRESH, // expiredTime для безопасности
+		"id": userId,                                        // UserId для идентификации пользователя
+		"e":  int64(time.Now().Unix()) + TOKEN_TIME_REFRESH, // expiredTime для безопасности
 	}).SignedString(KEY)
 	return token, err
 }
@@ -72,8 +67,8 @@ func GetIdentity(token string) (tokenPayload, error) {
 	}
 
 	values := identity.Claims.(jwt.MapClaims)
-	userId := int(values["userID"].(float64))
-	expiredTime := int64(values["exp"].(float64))
+	userId := int(values["id"].(float64))
+	expiredTime := int64(values["e"].(float64))
 
 	jwtPayload.UserID = userId
 	jwtPayload.expirationTime = expiredTime

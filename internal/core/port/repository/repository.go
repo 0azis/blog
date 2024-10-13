@@ -23,7 +23,7 @@ type PostRepositoty interface {
 	// GetOne
 	GetOne(postID int) (domain.UserPost, error)
 	// Publish
-	Publish(postID, userID int) error
+	Publish(postID, userID int) (int, error)
 	// Update
-	Update(postID int, post domain.PostCredentials) error
+	Update(postID int, post domain.PostCredentials) (int, error)
 }

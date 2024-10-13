@@ -44,16 +44,20 @@ func (pc postControllers) UpdatePost(c *gin.Context) {
 	}
 	value := c.Param("id")
 	postID, err := strconv.Atoi(value)
-	if err != nil{
+	if err != nil {
 		c.JSON(400, utils.Error(400, nil))
 		return
 	}
 
 	postCredentials.UserID = userID
-	err = pc.store.Post.Update(postID, postCredentials)
+	updatedID, err := pc.store.Post.Update(postID, postCredentials)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
+		return
+	}
+	if updatedID == 0 {
+		c.JSON(404, utils.Error(404, nil))
 		return
 	}
 
@@ -97,10 +101,14 @@ func (pc postControllers) Publish(c *gin.Context) {
 		return
 	}
 
-	err = pc.store.Post.Publish(postID, userID)
+	publishedID, err := pc.store.Post.Publish(postID, userID)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
+		return
+	}
+	if publishedID == 0 {
+		c.JSON(404, utils.Error(404, nil))
 		return
 	}
 
