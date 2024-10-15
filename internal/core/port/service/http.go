@@ -17,3 +17,9 @@ type PostControllers interface {
 	Publish(c *gin.Context)
 	UpdatePost(c *gin.Context)
 }
+
+type RelationControllers interface {
+	Subscribe(c *gin.Context)
+	Followers(c *gin.Context)
+	Subscribers(c *gin.Context)
+}

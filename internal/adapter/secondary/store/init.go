@@ -8,8 +8,9 @@ import (
 )
 
 type Store struct {
-	User repository.UserRepository
-	Post repository.PostRepositoty
+	User     repository.UserRepository
+	Post     repository.PostRepositoty
+	Relation repository.RelationRepository
 }
 
 func NewStore(uri string) (Store, error) {
@@ -18,6 +19,7 @@ func NewStore(uri string) (Store, error) {
 	store := Store{
 		user{db},
 		post{db},
+		relation{db},
 	}
 	return store, err
 }

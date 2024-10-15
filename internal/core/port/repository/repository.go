@@ -27,3 +27,9 @@ type PostRepositoty interface {
 	// Update
 	Update(postID int, post domain.PostCredentials) (int, error)
 }
+
+type RelationRepository interface {
+	SubscribersCount(userID int) (int, error)
+	FollowersCount(userID int) (int, error)
+	Subscribe(userID, profileID int) error
+}

@@ -22,21 +22,13 @@ CREATE TABLE
         primary key (id)
     );
 
--- CREATE TABLE
---     subscribers (
---         user_id smallint not null,
---         subscriber_id smallint not null,
---         foreign key (user_id) references users (id) on delete cascade,
---         foreign key (subscriber_id) references users (id) on delete cascade
---     );
-
--- CREATE TABLE
---     followers (
---         user_id smallint not null,
---         follower_id smallint not null,
---         foreign key (user_id) references users (id) on delete cascade,
---         foreign key (follower_id) references users (id) on delete cascade
---     );
+create table relations (
+	id_1 smallint not null,
+  id_2 smallint not null,
+  foreign key (id_1) references users(id) on delete cascade,
+  foreign key (id_2) references users(id) on delete cascade,
+  primary key (id_1, id_2)
+);
 
 -- CREATE TABLE
 --     comments (
