@@ -15,8 +15,10 @@ CREATE TABLE
         id smallint not null auto_increment,
         user_id smallint not null,
         category_id smallint,
+        title varchar(255),
+        preview varchar(255),
         date datetime default current_timestamp,
-        content text not null,
+        content text,
         public bool default false not null, 
         foreign key (user_id) references users (id) on delete cascade,
         primary key (id)
@@ -28,6 +30,12 @@ create table relations (
   foreign key (id_1) references users(id) on delete cascade,
   foreign key (id_2) references users(id) on delete cascade,
   primary key (id_1, id_2)
+);
+
+create table tags (
+    post_id smallint not null,
+    tag varchar(255) not null,
+    foreign key (post_id) references posts(id) on delete cascade
 );
 
 -- CREATE TABLE

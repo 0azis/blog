@@ -83,8 +83,9 @@ func (pc postControllers) GetOne(c *gin.Context) {
 		return
 	}
 
-	post, _ := pc.store.Post.GetOne(postID)
+	post, err := pc.store.Post.GetOne(postID)
 	if post.ID == 0 {
+		slog.Error(err.Error())
 		c.JSON(404, utils.Error(404, nil))
 		return
 	}

@@ -33,3 +33,9 @@ type RelationRepository interface {
 	FollowersCount(userID int) (int, error)
 	Subscribe(userID, profileID int) error
 }
+
+type TagRepository interface {
+	Create(tag domain.Tag) (int64, error)
+	GetByPostID(postID int) (domain.Tag, error)
+	GetByPopularity() (domain.Tags, error)
+}

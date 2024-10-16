@@ -11,6 +11,7 @@ type Store struct {
 	User     repository.UserRepository
 	Post     repository.PostRepositoty
 	Relation repository.RelationRepository
+	Tag      repository.TagRepository
 }
 
 func NewStore(uri string) (Store, error) {
@@ -20,6 +21,7 @@ func NewStore(uri string) (Store, error) {
 		user{db},
 		post{db},
 		relation{db},
+		tag{db},
 	}
 	return store, err
 }

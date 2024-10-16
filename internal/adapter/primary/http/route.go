@@ -15,6 +15,7 @@ func InitRoutes(r *gin.Engine, store store.Store) {
 	userRoutes(v1, store)
 	postRoutes(v1, store)
 	relationRoutes(v1, store)
+	tagRoutes(v1, store)
 }
 
 func userRoutes(r *gin.RouterGroup, store store.Store) {
@@ -46,4 +47,13 @@ func relationRoutes(r *gin.RouterGroup, store store.Store) {
 	relation.POST("/subscribers/:id", controllers.Subscribe)
 	relation.GET("/subscribers", controllers.Subscribers)
 	relation.GET("/followers", controllers.Followers)
+}
+
+func tagRoutes(r *gin.RouterGroup, store store.Store) {
+	tag := r.Group("/tags", middleware.AuthMiddleware)
+	controllers := controller.NewTagControllers(store)
+
+	tag.PATCH("/", controllers.Create)
+	tag.GET("/post/:id", controllers.GetByPostID)
+	tag.GET("/top", controllers.GetByPopularity)
 }

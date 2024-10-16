@@ -23,3 +23,9 @@ type RelationControllers interface {
 	Followers(c *gin.Context)
 	Subscribers(c *gin.Context)
 }
+
+type TagControllers interface {
+	Create(c *gin.Context)
+	GetByPostID(c *gin.Context)
+	GetByPopularity(c *gin.Context)
+}
