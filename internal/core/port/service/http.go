@@ -29,3 +29,13 @@ type TagControllers interface {
 	GetByPostID(c *gin.Context)
 	GetByPopularity(c *gin.Context)
 }
+
+type ImageControllers interface {
+	Upload(c *gin.Context)
+}
+
+type CommentControllres interface {
+	NewComment(c *gin.Context)
+	GetCommentsByPost(c *gin.Context)
+	GetComment(c *gin.Context)
+}

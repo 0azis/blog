@@ -11,7 +11,7 @@ import (
 )
 
 type relationControllers struct {
-	db store.Store
+	store store.Store
 }
 
 func (rc relationControllers) Subscribe(c *gin.Context) {
@@ -23,7 +23,7 @@ func (rc relationControllers) Subscribe(c *gin.Context) {
 		return
 	}
 
-	err = rc.db.Relation.Subscribe(userID, authorID)
+	err = rc.store.Relation.Subscribe(userID, authorID)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
@@ -35,7 +35,7 @@ func (rc relationControllers) Subscribe(c *gin.Context) {
 
 func (rc relationControllers) Followers(c *gin.Context) {
 	userID := utils.ExtractID(c)
-	followers, err := rc.db.Relation.FollowersCount(userID)
+	followers, err := rc.store.Relation.FollowersCount(userID)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
@@ -47,7 +47,7 @@ func (rc relationControllers) Followers(c *gin.Context) {
 
 func (rc relationControllers) Subscribers(c *gin.Context) {
 	userID := utils.ExtractID(c)
-	subscribers, err := rc.db.Relation.SubscribersCount(userID)
+	subscribers, err := rc.store.Relation.SubscribersCount(userID)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))

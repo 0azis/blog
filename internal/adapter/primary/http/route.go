@@ -11,11 +11,14 @@ import (
 func InitRoutes(r *gin.Engine, store store.Store) {
 	api := r.Group("/api")
 	v1 := api.Group("/v1")
+	v1.Static("/uploads", "/home/oazis/Documents/blog/upload/")
 
 	userRoutes(v1, store)
 	postRoutes(v1, store)
 	relationRoutes(v1, store)
 	tagRoutes(v1, store)
+	imageRoutes(v1)
+	commentRoutes(v1, store)
 }
 
 func userRoutes(r *gin.RouterGroup, store store.Store) {
@@ -56,4 +59,20 @@ func tagRoutes(r *gin.RouterGroup, store store.Store) {
 	tag.PATCH("/", controllers.Create)
 	tag.GET("/post/:id", controllers.GetByPostID)
 	tag.GET("/top", controllers.GetByPopularity)
+}
+
+func imageRoutes(r *gin.RouterGroup) {
+	image := r.Group("/image", middleware.AuthMiddleware)
+	controllers := controller.NewImageControllers()
+
+	image.POST("/", controllers.Upload)
+}
+
+func commentRoutes(r *gin.RouterGroup, store store.Store) {
+	comment := r.Group("/comments", middleware.AuthMiddleware)
+	controllers := controller.NewCommentControllesr(store)
+
+	comment.POST("/", controllers.NewComment)
+	comment.GET("/post/:id", controllers.GetCommentsByPost)
+	comment.GET("/:id", controllers.GetComment)
 }

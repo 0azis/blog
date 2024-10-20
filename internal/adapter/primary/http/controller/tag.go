@@ -5,7 +5,6 @@ import (
 	"blog/internal/core/domain"
 	"blog/internal/core/port/service"
 	"blog/internal/core/utils"
-	"fmt"
 	"log/slog"
 	"strconv"
 
@@ -13,7 +12,7 @@ import (
 )
 
 type tagControllers struct {
-	db store.Store
+	store store.Store
 }
 
 func (tc tagControllers) Create(c *gin.Context) {
@@ -24,8 +23,7 @@ func (tc tagControllers) Create(c *gin.Context) {
 		return
 	}
 
-	rowsAffected, err := tc.db.Tag.Create(tagCredentials)
-	fmt.Println(rowsAffected)
+	rowsAffected, err := tc.store.Tag.Create(tagCredentials)
 	if err != nil {
 		c.JSON(500, utils.Error(500, nil))
 		return
@@ -45,7 +43,7 @@ func (tc tagControllers) GetByPostID(c *gin.Context) {
 		return
 	}
 
-	tags, err := tc.db.Tag.GetByPostID(postID)
+	tags, err := tc.store.Tag.GetByPostID(postID)
 
 	if err != nil {
 		slog.Error(err.Error())
@@ -61,7 +59,7 @@ func (tc tagControllers) GetByPostID(c *gin.Context) {
 }
 
 func (tc tagControllers) GetByPopularity(c *gin.Context) {
-	tags, err := tc.db.Tag.GetByPopularity()
+	tags, err := tc.store.Tag.GetByPopularity()
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))

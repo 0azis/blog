@@ -36,33 +36,33 @@ func RefreshMiddleware(c *gin.Context) {
 	bearer := c.Request.Header.Get("Authorization")
 	token := strings.Split(bearer, " ")
 	if len(token) == 1 {
-		c.JSON(401, utils.Error(401, "There is no jwt token"))
+		c.JSON(401, utils.Error(401, nil))
 		c.Abort()
 		return
 	}
 	accessPayload, err := utils.GetIdentity(token[1])
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, utils.Error(500, "Error while decoding token"))
+		c.JSON(500, utils.Error(500, nil))
 		c.Abort()
 		return
 	}
 	cookieToken, err := c.Cookie("auth")
 	if err != nil {
-		c.JSON(401, utils.Error(401, "Error while getting token from cookie"))
+		c.JSON(401, utils.Error(401, nil))
 		c.Abort()
 		return
 	}
 
 	refreshPayload, err := utils.GetIdentity(cookieToken)
 	if err != nil {
-		c.JSON(500, utils.Error(500, "Error while decoding token"))
+		c.JSON(500, utils.Error(500, nil))
 		c.Abort()
 		return
 	}
 
 	if refreshPayload.UserID != accessPayload.UserID {
-		c.JSON(401, utils.Error(401, "Tokens are not the same"))
+		c.JSON(401, utils.Error(401, nil))
 		c.Abort()
 		return
 	}

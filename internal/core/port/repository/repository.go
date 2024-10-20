@@ -39,3 +39,9 @@ type TagRepository interface {
 	GetByPostID(postID int) (domain.Tag, error)
 	GetByPopularity() (domain.Tags, error)
 }
+
+type CommentRepository interface {
+	Create(comment domain.Comment) error
+	GetByPostID(postID int) ([]domain.Comment, error)
+	GetByID(ID int) (domain.Comment, error)
+}
