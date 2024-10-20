@@ -36,10 +36,10 @@ func postRoutes(r *gin.RouterGroup, store store.Store) {
 	post := r.Group("/posts", middleware.AuthMiddleware)
 	controllers := controller.NewPostControllers(store)
 
-	post.POST("/", controllers.Create)
+	post.POST("", controllers.Create)
 	post.POST("/publish/:id", controllers.Publish)
-	post.GET("/", controllers.GetAll)
-	post.GET("/:id", controllers.GetOne)
+	post.GET("", controllers.GetAll)
+	post.GET(":id", controllers.GetOne)
 	post.PATCH("/:id", controllers.UpdatePost)
 }
 
@@ -56,23 +56,23 @@ func tagRoutes(r *gin.RouterGroup, store store.Store) {
 	tag := r.Group("/tags", middleware.AuthMiddleware)
 	controllers := controller.NewTagControllers(store)
 
-	tag.PATCH("/", controllers.Create)
+	tag.PATCH("", controllers.Create)
 	tag.GET("/post/:id", controllers.GetByPostID)
 	tag.GET("/top", controllers.GetByPopularity)
 }
 
 func imageRoutes(r *gin.RouterGroup) {
-	image := r.Group("/image", middleware.AuthMiddleware)
+	image := r.Group("/uploads", middleware.AuthMiddleware)
 	controllers := controller.NewImageControllers()
 
-	image.POST("/", controllers.Upload)
+	image.POST("", controllers.Upload)
 }
 
 func commentRoutes(r *gin.RouterGroup, store store.Store) {
 	comment := r.Group("/comments", middleware.AuthMiddleware)
 	controllers := controller.NewCommentControllesr(store)
 
-	comment.POST("/", controllers.NewComment)
+	comment.POST("", controllers.NewComment)
 	comment.GET("/post/:id", controllers.GetCommentsByPost)
 	comment.GET("/:id", controllers.GetComment)
 }

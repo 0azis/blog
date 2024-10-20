@@ -29,7 +29,7 @@ func (ic imageControllers) Upload(c *gin.Context) {
 		return
 	}
 
-	c.JSON(201, utils.Error(201, nil))
+	c.JSON(201, utils.Error(201, filename))
 }
 
 // func (ic imageControllers) GetFile(c *gin.Context) {
