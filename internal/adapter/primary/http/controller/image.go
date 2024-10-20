@@ -20,9 +20,9 @@ func (ic imageControllers) Upload(c *gin.Context) {
 	}
 	uuid := utils.GenerateUUID()
 	filename := uuid + path.Ext(file.Filename)
-	file.Filename = filename
 	fmt.Println(filename)
-	err = c.SaveUploadedFile(file, "../../../../upload")
+
+	err = c.SaveUploadedFile(file, "../upload/"+filename)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))

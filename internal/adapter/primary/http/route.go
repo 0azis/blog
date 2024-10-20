@@ -11,7 +11,7 @@ import (
 func InitRoutes(r *gin.Engine, store store.Store) {
 	api := r.Group("/api")
 	v1 := api.Group("/v1")
-	v1.Static("/uploads", "/home/oazis/Documents/blog/upload/")
+	v1.Static("/uploads", "../upload")
 
 	userRoutes(v1, store)
 	postRoutes(v1, store)
