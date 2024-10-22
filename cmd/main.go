@@ -56,7 +56,7 @@ func main() {
 	}
 	r.Use(cors.New(cfg))
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	http.InitRoutes(r, store)
+	http.InitRoutes(r, store, config.Server.SavePath)
 
 	err = r.Run(httpSocket)
 	if err != nil {

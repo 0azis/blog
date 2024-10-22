@@ -19,8 +19,9 @@ func NewConfig() *config {
 }
 
 type httpServer struct {
-	host string
-	port string
+	host     string
+	port     string
+	SavePath string
 }
 
 func (hs httpServer) BuildSocket() string {
@@ -29,8 +30,9 @@ func (hs httpServer) BuildSocket() string {
 
 func initHtppServer() *httpServer {
 	return &httpServer{
-		host: getEnv("HTTP_HOST", "localhost"),
-		port: getEnv("HTTP_PORT", "8000"),
+		host:     getEnv("HTTP_HOST", "localhost"),
+		port:     getEnv("HTTP_PORT", "8000"),
+		SavePath: getEnv("SAVE_IMAGE_PATH", ""),
 	}
 }
 

@@ -8,16 +8,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRoutes(r *gin.Engine, store store.Store) {
+func InitRoutes(r *gin.Engine, store store.Store, savePath string) {
 	api := r.Group("/api")
 	v1 := api.Group("/v1")
-	v1.Static("/uploads", "../upload")
+	v1.Static("/uploads", savePath)
 
 	userRoutes(v1, store)
 	postRoutes(v1, store)
 	relationRoutes(v1, store)
 	tagRoutes(v1, store)
-	imageRoutes(v1)
+	imageRoutes(v1, savePath)
 	commentRoutes(v1, store)
 }
 
@@ -61,9 +61,9 @@ func tagRoutes(r *gin.RouterGroup, store store.Store) {
 	tag.GET("/top", controllers.GetByPopularity)
 }
 
-func imageRoutes(r *gin.RouterGroup) {
+func imageRoutes(r *gin.RouterGroup, savePath string) {
 	image := r.Group("/uploads", middleware.AuthMiddleware)
-	controllers := controller.NewImageControllers()
+	controllers := controller.NewImageControllers(savePath)
 
 	image.POST("", controllers.Upload)
 }
