@@ -8,7 +8,7 @@ import (
 
 var (
 	KEY                []byte = []byte("secret")
-	TOKEN_TIME_ACCESS  int64  = 10000
+	TOKEN_TIME_ACCESS  int64  = 1000
 	TOKEN_TIME_REFRESH int64  = 432000
 )
 
