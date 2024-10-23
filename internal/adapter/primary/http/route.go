@@ -27,9 +27,10 @@ func userRoutes(r *gin.RouterGroup, store store.Store) {
 
 	user.POST("/signin", controllers.SignIn)
 	user.POST("/signup", controllers.SignUp)
-	user.GET("/profile", middleware.AuthMiddleware, controllers.Profile)
+	user.GET(":username", middleware.AuthMiddleware, controllers.GetByUsername)
 	user.GET("/search", middleware.AuthMiddleware, controllers.Search)
 	user.POST("/refresh", middleware.RefreshMiddleware, controllers.RefreshTokens)
+	user.POST("/logout", middleware.AuthMiddleware, controllers.Logout)
 }
 
 func postRoutes(r *gin.RouterGroup, store store.Store) {

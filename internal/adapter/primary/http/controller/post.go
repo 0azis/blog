@@ -5,6 +5,8 @@ import (
 	"blog/internal/core/domain"
 	"blog/internal/core/port/service"
 	"blog/internal/core/utils"
+	"database/sql"
+	"errors"
 	"log/slog"
 	"strconv"
 
@@ -84,9 +86,13 @@ func (pc postControllers) GetOne(c *gin.Context) {
 	}
 
 	post, err := pc.store.Post.GetOne(postID)
-	if post.ID == 0 {
-		slog.Error(err.Error())
+	if errors.Is(err, sql.ErrNoRows) {
 		c.JSON(404, utils.Error(404, nil))
+		return
+	}
+	if err != nil {
+		slog.Error(err.Error())
+		c.JSON(500, utils.Error(500, nil))
 		return
 	}
 

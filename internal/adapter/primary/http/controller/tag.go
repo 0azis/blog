@@ -5,6 +5,8 @@ import (
 	"blog/internal/core/domain"
 	"blog/internal/core/port/service"
 	"blog/internal/core/utils"
+	"database/sql"
+	"errors"
 	"log/slog"
 	"strconv"
 
@@ -25,6 +27,7 @@ func (tc tagControllers) Create(c *gin.Context) {
 
 	rowsAffected, err := tc.store.Tag.Create(tagCredentials)
 	if err != nil {
+		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
@@ -44,17 +47,16 @@ func (tc tagControllers) GetByPostID(c *gin.Context) {
 	}
 
 	tags, err := tc.store.Tag.GetByPostID(postID)
-
+	if errors.Is(err, sql.ErrNoRows) {
+		c.JSON(404, utils.Error(404, nil))
+		return
+	}
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
 
-	if tags.PostID == 0 {
-		c.JSON(404, utils.Error(404, nil))
-		return
-	}
 	c.JSON(200, utils.Error(200, tags))
 }
 

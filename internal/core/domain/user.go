@@ -8,6 +8,7 @@ type User struct {
 	Name        *string `json:"name" db:"name"`
 	Avatar      *string `json:"avatar" db:"avatar"`
 	Description *string `json:"description" db:"description"`
+	Owner       bool    `json:"owner"`
 }
 
 type SignUpCredentials struct {

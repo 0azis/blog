@@ -5,6 +5,8 @@ import (
 	"blog/internal/core/domain"
 	"blog/internal/core/port/service"
 	"blog/internal/core/utils"
+	"database/sql"
+	"errors"
 	"log/slog"
 	"strconv"
 
@@ -37,9 +39,14 @@ func (uc userControllers) SignIn(c *gin.Context) {
 		return
 	}
 
-	dbUser, _ := uc.store.User.GetByLogin(credentials.Login)
-	if dbUser.ID == 0 {
+	dbUser, err := uc.store.User.GetByLogin(credentials.Login)
+	if errors.Is(err, sql.ErrNoRows) {
 		c.JSON(404, utils.Error(404, nil))
+		return
+	}
+	if err != nil {
+		slog.Error(err.Error())
+		c.JSON(500, utils.Error(500, nil))
 		return
 	}
 
@@ -79,7 +86,13 @@ func (uc userControllers) SignUp(c *gin.Context) {
 		return
 	}
 
-	dbUser, _ := uc.store.User.CheckCredentials(credentials.Email, credentials.Username)
+	dbUser, err := uc.store.User.CheckCredentials(credentials.Email, credentials.Username)
+	if err != nil {
+		slog.Error(err.Error())
+		c.JSON(500, utils.Error(500, nil))
+		return
+	}
+
 	if dbUser.Email == credentials.Email {
 		c.JSON(409, utils.Error(
 			409, "Email already exists",
@@ -125,27 +138,49 @@ func (uc userControllers) SignUp(c *gin.Context) {
 	c.JSON(201, utils.Error(201, jwts.Access))
 }
 
-// Profile godoc
-//
-//	@Tags		user
-//	@Summary	Get a profile
-//	@Accept		json
-//	@Produce	json
-//	@Failure	500	{json}	{"status": 500, "message": "Internal Server Error", "data": null}
-//	@Failure	400	{json}	{"status": 400, "message": "Bad Request", "data": null}
-//	@Failure	409	{json}	{"status": 409, "message": "Conflict", "data": null}
-//	@Success	201	{json}	{"status": 201, "message": "Created", "data": string}
-//	@Router		/user/profile [get]
-func (uc userControllers) Profile(c *gin.Context) {
-	ID := utils.ExtractID(c)
+// // Profile godoc
+// //
+// //	@Tags		user
+// //	@Summary	Get a profile
+// //	@Accept		json
+// //	@Produce	json
+// //	@Failure	500	{json}	{"status": 500, "message": "Internal Server Error", "data": null}
+// //	@Failure	400	{json}	{"status": 400, "message": "Bad Request", "data": null}
+// //	@Failure	409	{json}	{"status": 409, "message": "Conflict", "data": null}
+// //	@Success	201	{json}	{"status": 201, "message": "Created", "data": string}
+// //	@Router		/user/profile [get]
+// func (uc userControllers) Profile(c *gin.Context) {
+// 	ID := utils.ExtractID(c)
 
-	user, _ := uc.store.User.GetByID(ID)
-	if user.ID == 0 {
+// 	user, _ := uc.store.User.GetByID(ID)
+// 	if user.ID == 0 {
+// 		c.JSON(404, utils.Error(404, nil))
+// 		return
+// 	}
+
+// 	c.JSON(200, utils.Error(200, user))
+// }
+
+func (uc userControllers) GetByUsername(c *gin.Context) {
+	userID := utils.ExtractID(c)
+
+	username := c.Param("username")
+	profile, err := uc.store.User.GetByUsername(username)
+	if errors.Is(err, sql.ErrNoRows) {
 		c.JSON(404, utils.Error(404, nil))
 		return
 	}
+	if err != nil {
+		slog.Error(err.Error())
+		c.JSON(500, utils.Error(500, nil))
+		return
+	}
 
-	c.JSON(200, utils.Error(200, user))
+	if profile.ID == userID {
+		profile.Owner = true
+	}
+
+	c.JSON(200, utils.Error(200, profile))
 }
 
 //	Search godoc
@@ -187,6 +222,10 @@ func (uc userControllers) Search(c *gin.Context) {
 	}
 
 	c.JSON(200, utils.Error(200, query_users))
+}
+
+func (uc userControllers) Logout(c *gin.Context) {
+	c.SetCookie("auth", "", -1, "/", "localhost", false, false)
 }
 
 func (uc userControllers) RefreshTokens(c *gin.Context) {

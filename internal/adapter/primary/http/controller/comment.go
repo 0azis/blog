@@ -5,6 +5,8 @@ import (
 	"blog/internal/core/domain"
 	"blog/internal/core/port/service"
 	"blog/internal/core/utils"
+	"database/sql"
+	"errors"
 	"log/slog"
 	"strconv"
 
@@ -62,11 +64,12 @@ func (cc commentControllers) GetComment(c *gin.Context) {
 	}
 
 	comment, err := cc.store.Comment.GetByID(commentID)
-	if comment.ID == 0 {
+	if errors.Is(err, sql.ErrNoRows) {
 		c.JSON(404, utils.Error(404, nil))
 		return
 	}
 	if err != nil {
+		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}

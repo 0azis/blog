@@ -31,6 +31,12 @@ func (u user) GetByLogin(login string) (domain.User, error) {
 	return resultUser, err
 }
 
+func (u user) GetByUsername(username string) (domain.User, error) {
+	resultUser := domain.User{}
+	err := u.db.Get(&resultUser, `select * from users where username = ?`, username)
+	return resultUser, err
+}
+
 func (u user) CheckCredentials(email, username string) (domain.User, error) {
 	checkedUser := domain.User{}
 	err := u.db.Get(&checkedUser, `select * from users where username = ? or email = ?`, username, email)
