@@ -7,6 +7,7 @@ import (
 	"blog/internal/core/utils"
 	"database/sql"
 	"errors"
+	"fmt"
 	"log/slog"
 	"strconv"
 
@@ -19,18 +20,6 @@ type userControllers struct {
 	store store.Store
 }
 
-// SignIn godoc
-//
-//	@Tags		user
-//	@Summary	Sign in to the account
-//	@Accept		json
-//	@Produce	json
-//	@Failure	500	{json}	{"status": 500, "message": "Internal Server Error", "data": null}
-//	@Failure	400	{json}	{"status": 400, "message": "Bad Request", "data": null}
-//	@Failure	404	{json}	{"status": 404, "message": "Not Found", "data": null}
-//	@Failure	401	{json}	{"status": 401, "message": "Unauthorized", "data": null}
-//	@Success	200	{json}	{"status": 200, "message": "OK", "data": string}
-//	@Router		/user/signin [post]
 func (uc userControllers) SignIn(c *gin.Context) {
 	credentials := domain.SignInCredentials{}
 	err := c.ShouldBind(&credentials)
@@ -62,22 +51,11 @@ func (uc userControllers) SignIn(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("auth", jwts.Refresh, 3600, "/", "localhost", false, false)
+	c.SetCookie("auth", jwts.Refresh, int(utils.TOKEN_TIME_REFRESH), "/", "localhost", false, false)
 
 	c.JSON(200, utils.Error(200, jwts.Access))
 }
 
-// SignUp godoc
-//
-//	@Tags		user
-//	@Summary	Create an account
-//	@Accept		json
-//	@Produce	json
-//	@Failure	500	{json}	{"status": 500, "message": "Internal Server Error", "data": null}
-//	@Failure	400	{json}	{"status": 400, "message": "Bad Request", "data": null}
-//	@Failure	409	{json}	{"status": 409, "message": "Conflict", "data": null}
-//	@Success	201	{json}	{"status": 201, "message": "Created", "data": string}
-//	@Router		/user/signup [post]
 func (uc userControllers) SignUp(c *gin.Context) {
 	credentials := domain.SignUpCredentials{}
 	err := c.ShouldBind(&credentials)
@@ -133,33 +111,27 @@ func (uc userControllers) SignUp(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("auth", jwts.Refresh, 3600, "/", "localhost", false, false)
+	c.SetCookie("auth", jwts.Refresh, int(utils.TOKEN_TIME_REFRESH), "/", "localhost", false, false)
 
 	c.JSON(201, utils.Error(201, jwts.Access))
 }
 
-// // Profile godoc
-// //
-// //	@Tags		user
-// //	@Summary	Get a profile
-// //	@Accept		json
-// //	@Produce	json
-// //	@Failure	500	{json}	{"status": 500, "message": "Internal Server Error", "data": null}
-// //	@Failure	400	{json}	{"status": 400, "message": "Bad Request", "data": null}
-// //	@Failure	409	{json}	{"status": 409, "message": "Conflict", "data": null}
-// //	@Success	201	{json}	{"status": 201, "message": "Created", "data": string}
-// //	@Router		/user/profile [get]
-// func (uc userControllers) Profile(c *gin.Context) {
-// 	ID := utils.ExtractID(c)
+func (uc userControllers) Profile(c *gin.Context) {
+	userID := utils.ExtractID(c)
 
-// 	user, _ := uc.store.User.GetByID(ID)
-// 	if user.ID == 0 {
-// 		c.JSON(404, utils.Error(404, nil))
-// 		return
-// 	}
+	user, err := uc.store.User.GetByID(userID)
+	if errors.Is(err, sql.ErrNoRows) {
+		c.JSON(404, utils.Error(404, nil))
+		return
+	}
+	if err != nil {
+		c.JSON(500, utils.Error(500, nil))
+		return
+	}
 
-// 	c.JSON(200, utils.Error(200, user))
-// }
+	user.SetOwnership(userID)
+	c.JSON(200, utils.Error(200, user))
+}
 
 func (uc userControllers) GetByUsername(c *gin.Context) {
 	userID := utils.ExtractID(c)
@@ -176,25 +148,12 @@ func (uc userControllers) GetByUsername(c *gin.Context) {
 		return
 	}
 
-	if profile.ID == userID {
-		profile.Owner = true
-	}
-
+	profile.SetOwnership(userID)
 	c.JSON(200, utils.Error(200, profile))
 }
 
-//	Search godoc
-//
-// @Tags		user
-// @Summary	Search users from query
-// @Accept		json
-// @Produce	json
-// @Failure	500	{json}	{"status": 500, "message": "Internal Server Error", "data": null}
-// @Failure	400	{json}	{"status": 400, "message": "Bad Request", "data": null}
-// @Failure	409	{json}	{"status": 409, "message": "Conflict", "data": null}
-// @Success	201	{json}	{"status": 201, "message": "Created", "data": string}
-// @Router		/user/search [get]
 func (uc userControllers) Search(c *gin.Context) {
+	userID := utils.ExtractID(c)
 	limit, err := strconv.Atoi(c.Query("limit"))
 	if err != nil || limit < 0 {
 		c.JSON(400, utils.Error(400, nil))
@@ -219,6 +178,11 @@ func (uc userControllers) Search(c *gin.Context) {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
+	}
+
+	for _, user := range query_users {
+		fmt.Println(user.ID, userID)
+		user.SetOwnership(userID)
 	}
 
 	c.JSON(200, utils.Error(200, query_users))

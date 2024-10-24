@@ -11,6 +11,12 @@ type User struct {
 	Owner       bool    `json:"owner"`
 }
 
+func (u *User) SetOwnership(jwtUserID int) {
+	if u.ID == jwtUserID {
+		u.Owner = true
+	}
+}
+
 type SignUpCredentials struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`

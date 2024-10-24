@@ -66,7 +66,7 @@ func (pc postControllers) UpdatePost(c *gin.Context) {
 	c.JSON(200, utils.Error(200, nil))
 }
 
-func (pc postControllers) GetAll(c *gin.Context) {
+func (pc postControllers) GetPosts(c *gin.Context) {
 	posts, err := pc.store.Post.GetAll()
 	if err != nil {
 		slog.Error(err.Error())
@@ -75,9 +75,10 @@ func (pc postControllers) GetAll(c *gin.Context) {
 	}
 
 	c.JSON(200, utils.Error(200, posts))
+
 }
 
-func (pc postControllers) GetOne(c *gin.Context) {
+func (pc postControllers) GetByID(c *gin.Context) {
 	value := c.Param("id")
 	postID, err := strconv.Atoi(value)
 	if err != nil {

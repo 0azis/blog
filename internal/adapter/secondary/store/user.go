@@ -43,8 +43,8 @@ func (u user) CheckCredentials(email, username string) (domain.User, error) {
 	return checkedUser, err
 }
 
-func (u user) Search(q string, limit, page int) ([]domain.User, error) {
-	resultUser := []domain.User{}
+func (u user) Search(q string, limit, page int) ([]*domain.User, error) {
+	resultUser := []*domain.User{}
 	err := u.db.Select(&resultUser, `select * from users where lower(username) LIKE lower(?) or lower(name) like lower(?) limit ? offset ?`, q, q, limit, page)
 	return resultUser, err
 }

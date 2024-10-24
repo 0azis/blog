@@ -22,26 +22,29 @@ func InitRoutes(r *gin.Engine, store store.Store, savePath string) {
 }
 
 func userRoutes(r *gin.RouterGroup, store store.Store) {
-	user := r.Group("/users")
 	controllers := controller.NewUserControllers(store)
 
-	user.POST("/signin", controllers.SignIn)
-	user.POST("/signup", controllers.SignUp)
+	user := r.Group("/users")
 	user.GET(":username", middleware.AuthMiddleware, controllers.GetByUsername)
+	user.GET("/account", middleware.AuthMiddleware, controllers.Profile)
 	user.GET("/search", middleware.AuthMiddleware, controllers.Search)
-	user.POST("/refresh", middleware.RefreshMiddleware, controllers.RefreshTokens)
-	user.POST("/logout", middleware.AuthMiddleware, controllers.Logout)
+
+	auth := user.Group("/auth")
+	auth.POST("/signin", controllers.SignIn)
+	auth.POST("/signup", controllers.SignUp)
+	auth.POST("/refresh", middleware.RefreshMiddleware, controllers.RefreshTokens)
+	auth.POST("/logout", middleware.AuthMiddleware, controllers.Logout)
 }
 
 func postRoutes(r *gin.RouterGroup, store store.Store) {
 	post := r.Group("/posts", middleware.AuthMiddleware)
 	controllers := controller.NewPostControllers(store)
 
+	post.GET("", controllers.GetPosts)
+	post.GET(":id", controllers.GetByID)
 	post.POST("", controllers.Create)
 	post.POST("/publish/:id", controllers.Publish)
-	post.GET("", controllers.GetAll)
-	post.GET(":id", controllers.GetOne)
-	post.PATCH("/:id", controllers.UpdatePost)
+	post.PATCH(":id", controllers.UpdatePost)
 }
 
 func relationRoutes(r *gin.RouterGroup, store store.Store) {
@@ -75,5 +78,5 @@ func commentRoutes(r *gin.RouterGroup, store store.Store) {
 
 	comment.POST("", controllers.NewComment)
 	comment.GET("/post/:id", controllers.GetCommentsByPost)
-	comment.GET("/:id", controllers.GetComment)
+	comment.GET(":id", controllers.GetComment)
 }

@@ -14,7 +14,7 @@ type UserRepository interface {
 	// GetByEmail returns userID by its email
 	CheckCredentials(email, username string) (domain.User, error)
 	// GetByusername get user by its username
-	Search(q string, limit, page int) ([]domain.User, error)
+	Search(q string, limit, page int) ([]*domain.User, error)
 }
 
 type PostRepositoty interface {

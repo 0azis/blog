@@ -6,6 +6,7 @@ type UserControllers interface {
 	SignIn(c *gin.Context)
 	SignUp(c *gin.Context)
 	GetByUsername(c *gin.Context)
+	Profile(c *gin.Context)
 	Search(c *gin.Context)
 	Logout(c *gin.Context)
 	RefreshTokens(c *gin.Context)
@@ -13,8 +14,8 @@ type UserControllers interface {
 
 type PostControllers interface {
 	Create(c *gin.Context)
-	GetAll(c *gin.Context)
-	GetOne(c *gin.Context)
+	GetPosts(c *gin.Context)
+	GetByID(c *gin.Context)
 	Publish(c *gin.Context)
 	UpdatePost(c *gin.Context)
 }
