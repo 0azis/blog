@@ -29,7 +29,7 @@ func (ic imageControllers) Upload(c *gin.Context) {
 		return
 	}
 
-	c.JSON(201, utils.Error(201, filename))
+	c.JSON(201, utils.Error(201, utils.JSON{"filename": filename}))
 }
 
 func NewImageControllers(savePath string) service.ImageControllers {

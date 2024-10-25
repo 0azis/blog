@@ -57,7 +57,7 @@ func (tc tagControllers) GetByPostID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, utils.Error(200, tags))
+	c.JSON(200, utils.Error(200, utils.JSON{"tags": tags}))
 }
 
 func (tc tagControllers) GetByPopularity(c *gin.Context) {
@@ -67,7 +67,7 @@ func (tc tagControllers) GetByPopularity(c *gin.Context) {
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
-	c.JSON(200, utils.Error(200, tags))
+	c.JSON(200, utils.Error(200, utils.JSON{"tags": tags}))
 }
 
 func NewTagControllers(store store.Store) service.TagControllers {

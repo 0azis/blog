@@ -15,10 +15,10 @@ CREATE TABLE
         id smallint not null auto_increment,
         user_id smallint not null,
         category_id smallint,
-        title varchar(255),
+        title varchar(255) not null default '',
         preview varchar(255),
         date datetime default current_timestamp,
-        content text,
+        content text not null default (''),
         public bool default false not null,
         foreign key (user_id) references users (id) on delete cascade,
         primary key (id)

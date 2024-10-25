@@ -52,7 +52,7 @@ func (cc commentControllers) GetCommentsByPost(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, utils.Error(200, comments))
+	c.JSON(200, utils.Error(200, utils.JSON{"comments": comments}))
 }
 
 func (cc commentControllers) GetComment(c *gin.Context) {
@@ -74,7 +74,7 @@ func (cc commentControllers) GetComment(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, utils.Error(200, comment))
+	c.JSON(200, utils.Error(200, utils.JSON{"comment": comment}))
 }
 
 func NewCommentControllesr(store store.Store) service.CommentControllres {

@@ -11,7 +11,7 @@ type user struct {
 }
 
 func (u user) Create(user domain.User) (int, error) {
-	sqlResult, err := u.db.Exec(`insert into users (email, username, password) values (?, ?, ?)`, user.Email, user.Username, user.Password)
+	sqlResult, err := u.db.Exec(`insert into users (email, username, password, name) values (?, ?, ?, ?)`, user.Email, user.Username, user.Password, user.Name)
 	if err != nil {
 		return 0, err
 	}
@@ -39,7 +39,7 @@ func (u user) GetByUsername(username string) (domain.User, error) {
 
 func (u user) CheckCredentials(email, username string) (domain.User, error) {
 	checkedUser := domain.User{}
-	err := u.db.Get(&checkedUser, `select * from users where username = ? or email = ?`, username, email)
+	err := u.db.Get(&checkedUser, `select * from users where username = ? || email = ?`, username, email)
 	return checkedUser, err
 }
 

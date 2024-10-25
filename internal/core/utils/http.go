@@ -7,13 +7,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type JSON map[string]any
+
 type Response struct {
 	Status int    `json:"status"`
 	Msg    string `json:"message"`
-	Data   any    `json:"data"`
+	Data   JSON   `json:"data"`
 }
 
-func Error(status int, data any) Response {
+func Error(status int, data map[string]any) Response {
 	return Response{
 		Status: status,
 		Msg:    http.StatusText(status),

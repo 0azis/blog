@@ -42,7 +42,7 @@ func (rc relationControllers) Followers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, utils.Error(200, followers))
+	c.JSON(200, utils.Error(200, utils.JSON{"followersCount": followers}))
 }
 
 func (rc relationControllers) Subscribers(c *gin.Context) {
@@ -54,7 +54,7 @@ func (rc relationControllers) Subscribers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, utils.Error(200, subscribers))
+	c.JSON(200, utils.Error(200, utils.JSON{"subscribersCount": subscribers}))
 }
 
 func NewRelationControllers(store store.Store) service.RelationControllers {

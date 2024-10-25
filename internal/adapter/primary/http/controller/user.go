@@ -53,7 +53,7 @@ func (uc userControllers) SignIn(c *gin.Context) {
 
 	c.SetCookie("auth", jwts.Refresh, int(utils.TOKEN_TIME_REFRESH), "/", "localhost", false, false)
 
-	c.JSON(200, utils.Error(200, jwts.Access))
+	c.JSON(200, utils.Error(200, utils.JSON{"access_token": jwts.Access}))
 }
 
 func (uc userControllers) SignUp(c *gin.Context) {
@@ -65,22 +65,15 @@ func (uc userControllers) SignUp(c *gin.Context) {
 	}
 
 	dbUser, err := uc.store.User.CheckCredentials(credentials.Email, credentials.Username)
-	if err != nil {
+	if !errors.Is(err, sql.ErrNoRows) && err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
 
-	if dbUser.Email == credentials.Email {
-		c.JSON(409, utils.Error(
-			409, "Email already exists",
-		))
-		return
-	}
-	if dbUser.Username == credentials.Username {
-		c.JSON(409, utils.Error(
-			409, "Username already exists",
-		))
+	validation := domain.ValidateUser(credentials, dbUser)
+	if !validation.IsEmail || !validation.IsUsername || !validation.IsPassword {
+		c.JSON(409, utils.Error(409, utils.JSON{"validationInfo": validation}))
 		return
 	}
 
@@ -95,6 +88,7 @@ func (uc userControllers) SignUp(c *gin.Context) {
 		Email:    credentials.Email,
 		Username: credentials.Username,
 		Password: string(hash),
+		Name:     &credentials.Username,
 	}
 
 	userID, err := uc.store.User.Create(newUser)
@@ -113,7 +107,7 @@ func (uc userControllers) SignUp(c *gin.Context) {
 
 	c.SetCookie("auth", jwts.Refresh, int(utils.TOKEN_TIME_REFRESH), "/", "localhost", false, false)
 
-	c.JSON(201, utils.Error(201, jwts.Access))
+	c.JSON(201, utils.Error(201, utils.JSON{"access_token": jwts.Access}))
 }
 
 func (uc userControllers) Profile(c *gin.Context) {
@@ -130,14 +124,14 @@ func (uc userControllers) Profile(c *gin.Context) {
 	}
 
 	user.SetOwnership(userID)
-	c.JSON(200, utils.Error(200, user))
+	c.JSON(200, utils.Error(200, utils.JSON{"user": user}))
 }
 
 func (uc userControllers) GetByUsername(c *gin.Context) {
 	userID := utils.ExtractID(c)
 
 	username := c.Param("username")
-	profile, err := uc.store.User.GetByUsername(username)
+	account, err := uc.store.User.GetByUsername(username)
 	if errors.Is(err, sql.ErrNoRows) {
 		c.JSON(404, utils.Error(404, nil))
 		return
@@ -148,8 +142,8 @@ func (uc userControllers) GetByUsername(c *gin.Context) {
 		return
 	}
 
-	profile.SetOwnership(userID)
-	c.JSON(200, utils.Error(200, profile))
+	account.SetOwnership(userID)
+	c.JSON(200, utils.Error(200, utils.JSON{"account": account}))
 }
 
 func (uc userControllers) Search(c *gin.Context) {
@@ -173,19 +167,19 @@ func (uc userControllers) Search(c *gin.Context) {
 	query := c.Query("q")
 	search_query := "%" + query + "%"
 
-	query_users, err := uc.store.User.Search(search_query, limit, page)
+	queryUsers, err := uc.store.User.Search(search_query, limit, page)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
 
-	for _, user := range query_users {
+	for _, user := range queryUsers {
 		fmt.Println(user.ID, userID)
 		user.SetOwnership(userID)
 	}
 
-	c.JSON(200, utils.Error(200, query_users))
+	c.JSON(200, utils.Error(200, utils.JSON{"queryUsers": queryUsers}))
 }
 
 func (uc userControllers) Logout(c *gin.Context) {
@@ -203,7 +197,7 @@ func (uc userControllers) RefreshTokens(c *gin.Context) {
 
 	c.SetCookie("auth", jwts.Refresh, 3600, "/", "localhost", false, false)
 
-	c.JSON(200, utils.Error(200, jwts.Access))
+	c.JSON(200, utils.Error(200, utils.JSON{"access_token": jwts.Access}))
 }
 
 func NewUserControllers(store store.Store) service.UserControllers {

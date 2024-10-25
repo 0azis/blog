@@ -33,7 +33,7 @@ func (pc postControllers) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, utils.Error(200, postID))
+	c.JSON(200, utils.Error(200, utils.JSON{"postID": postID}))
 }
 
 func (pc postControllers) UpdatePost(c *gin.Context) {
@@ -67,14 +67,14 @@ func (pc postControllers) UpdatePost(c *gin.Context) {
 }
 
 func (pc postControllers) GetPosts(c *gin.Context) {
-	posts, err := pc.store.Post.GetAll()
+	posts, err := pc.store.Post.GetPosts()
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.Error(500, nil))
 		return
 	}
 
-	c.JSON(200, utils.Error(200, posts))
+	c.JSON(200, utils.Error(200, utils.JSON{"posts": posts}))
 
 }
 
@@ -86,7 +86,7 @@ func (pc postControllers) GetByID(c *gin.Context) {
 		return
 	}
 
-	post, err := pc.store.Post.GetOne(postID)
+	post, err := pc.store.Post.GetPost(postID)
 	if errors.Is(err, sql.ErrNoRows) {
 		c.JSON(404, utils.Error(404, nil))
 		return
@@ -97,7 +97,7 @@ func (pc postControllers) GetByID(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, utils.Error(200, post))
+	c.JSON(200, utils.Error(200, utils.JSON{"post": post}))
 }
 
 func (pc postControllers) Publish(c *gin.Context) {
@@ -105,6 +105,18 @@ func (pc postControllers) Publish(c *gin.Context) {
 	value := c.Param("id")
 	postID, err := strconv.Atoi(value)
 	if err != nil {
+		c.JSON(400, utils.Error(400, nil))
+		return
+	}
+
+	post, err := pc.store.Post.GetDraft(postID)
+	// fmt.Println("test", *post.Title, *post.Content)
+	if err != nil {
+		slog.Error(err.Error())
+		c.JSON(500, utils.Error(500, nil))
+		return
+	}
+	if !post.Validate() {
 		c.JSON(400, utils.Error(400, nil))
 		return
 	}
