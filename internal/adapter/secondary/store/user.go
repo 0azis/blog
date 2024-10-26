@@ -25,12 +25,6 @@ func (u user) GetByID(ID int) (domain.User, error) {
 	return resultUser, err
 }
 
-func (u user) GetByLogin(login string) (domain.User, error) {
-	resultUser := domain.User{}
-	err := u.db.Get(&resultUser, `select * from users where username = ? or email = ?`, login, login)
-	return resultUser, err
-}
-
 func (u user) GetByUsername(username string) (domain.User, error) {
 	resultUser := domain.User{}
 	err := u.db.Get(&resultUser, `select * from users where username = ?`, username)
@@ -39,7 +33,7 @@ func (u user) GetByUsername(username string) (domain.User, error) {
 
 func (u user) CheckCredentials(email, username string) (domain.User, error) {
 	checkedUser := domain.User{}
-	err := u.db.Get(&checkedUser, `select * from users where username = ? || email = ?`, username, email)
+	err := u.db.Get(&checkedUser, `select * from users where username = ? or email = ?`, username, email)
 	return checkedUser, err
 }
 
@@ -47,4 +41,13 @@ func (u user) Search(q string, limit, page int) ([]*domain.User, error) {
 	resultUser := []*domain.User{}
 	err := u.db.Select(&resultUser, `select * from users where lower(username) LIKE lower(?) or lower(name) like lower(?) limit ? offset ?`, q, q, limit, page)
 	return resultUser, err
+}
+
+func (u user) Update(userID int, updatedData domain.UserPatch) (int, error) {
+	sqlResult, err := u.db.Exec(`update users set name = ?, avatar = ?, description = ? where id = ?`, updatedData.Name, updatedData.Avatar, updatedData.Description, userID)
+	if err != nil {
+		return 0, err
+	}
+	rowsAffected, err := sqlResult.RowsAffected()
+	return int(rowsAffected), err
 }

@@ -28,12 +28,16 @@ func userRoutes(r *gin.RouterGroup, store store.Store) {
 	user.GET(":username", middleware.AuthMiddleware, controllers.GetByUsername)
 	user.GET("/account", middleware.AuthMiddleware, controllers.Profile)
 	user.GET("/search", middleware.AuthMiddleware, controllers.Search)
+	user.PATCH("", middleware.AuthMiddleware, controllers.UpdateAccount)
 
 	auth := user.Group("/auth")
 	auth.POST("/signin", controllers.SignIn)
 	auth.POST("/signup", controllers.SignUp)
 	auth.POST("/refresh", middleware.RefreshMiddleware, controllers.RefreshTokens)
 	auth.POST("/logout", middleware.AuthMiddleware, controllers.Logout)
+
+	// account := r.Group("/account")
+	// account.POST("")
 }
 
 func postRoutes(r *gin.RouterGroup, store store.Store) {

@@ -3,6 +3,7 @@ package controller
 import (
 	"blog/internal/core/port/service"
 	"blog/internal/core/utils"
+	"blog/internal/core/utils/http"
 	"log/slog"
 	"path"
 
@@ -16,7 +17,7 @@ type imageControllers struct {
 func (ic imageControllers) Upload(c *gin.Context) {
 	file, err := c.FormFile("file")
 	if err != nil {
-		c.JSON(400, utils.Error(400, nil))
+		c.JSON(400, http.Err(400))
 		return
 	}
 	uuid := utils.GenerateUUID()
@@ -25,11 +26,11 @@ func (ic imageControllers) Upload(c *gin.Context) {
 	err = c.SaveUploadedFile(file, ic.path+"/"+filename)
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, utils.Error(500, nil))
+		c.JSON(500, http.Err(500))
 		return
 	}
 
-	c.JSON(201, utils.Error(201, utils.JSON{"filename": filename}))
+	c.JSON(201, http.JSON{"filename": filename})
 }
 
 func NewImageControllers(savePath string) service.ImageControllers {

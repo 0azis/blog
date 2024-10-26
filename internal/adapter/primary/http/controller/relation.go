@@ -3,7 +3,7 @@ package controller
 import (
 	"blog/internal/adapter/secondary/store"
 	"blog/internal/core/port/service"
-	"blog/internal/core/utils"
+	"blog/internal/core/utils/http"
 	"log/slog"
 	"strconv"
 
@@ -15,46 +15,46 @@ type relationControllers struct {
 }
 
 func (rc relationControllers) Subscribe(c *gin.Context) {
-	userID := utils.ExtractID(c)
+	userID := http.ExtractID(c)
 	value := c.Param("id")
 	authorID, err := strconv.Atoi(value)
 	if err != nil {
-		c.JSON(400, utils.Error(400, nil))
+		c.JSON(400, http.Err(400))
 		return
 	}
 
 	err = rc.store.Relation.Subscribe(userID, authorID)
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, utils.Error(500, nil))
+		c.JSON(500, http.Err(500))
 		return
 	}
 
-	c.JSON(200, utils.Error(200, nil))
+	c.JSON(200, http.JSON{})
 }
 
 func (rc relationControllers) Followers(c *gin.Context) {
-	userID := utils.ExtractID(c)
+	userID := http.ExtractID(c)
 	followers, err := rc.store.Relation.FollowersCount(userID)
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, utils.Error(500, nil))
+		c.JSON(500, http.Err(500))
 		return
 	}
 
-	c.JSON(200, utils.Error(200, utils.JSON{"followersCount": followers}))
+	c.JSON(200, http.JSON{"followersCount": followers})
 }
 
 func (rc relationControllers) Subscribers(c *gin.Context) {
-	userID := utils.ExtractID(c)
+	userID := http.ExtractID(c)
 	subscribers, err := rc.store.Relation.SubscribersCount(userID)
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, utils.Error(500, nil))
+		c.JSON(500, http.Err(500))
 		return
 	}
 
-	c.JSON(200, utils.Error(200, utils.JSON{"subscribersCount": subscribers}))
+	c.JSON(200, http.JSON{"subscribersCount": subscribers})
 }
 
 func NewRelationControllers(store store.Store) service.RelationControllers {

@@ -13,18 +13,18 @@ type tag struct {
 func (t tag) Create(tag domain.Tag) (int64, error) {
 	var lastID int64
 
-	sqlResult, err := t.db.Exec(`delete from tags where post_id = ?`, tag.PostID)
-	lastID, _ = sqlResult.RowsAffected()
-	if lastID == 0 {
-		return lastID, nil
-	}
+	_, err := t.db.Query(`delete from tags where post_id = ?`, tag.PostID)
 	if err != nil {
 		return lastID, err
 	}
 
 	for _, s := range tag.Tags {
-		_, err = t.db.Exec(`insert into tags values (?, ?)`, tag.PostID, s)
+		sqlResult, err := t.db.Exec(`insert into tags values (?, ?)`, tag.PostID, s)
 		if err != nil {
+			return lastID, err
+		}
+		lastID, err = sqlResult.RowsAffected()
+		if err != nil || lastID == 0 {
 			return lastID, err
 		}
 	}

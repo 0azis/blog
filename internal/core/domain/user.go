@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"fmt"
 	"regexp"
 )
 
@@ -22,6 +21,16 @@ func (u *User) SetOwnership(jwtUserID int) {
 	}
 }
 
+type UserPatch struct {
+	Name        string `json:"name"`
+	Avatar      string `json:"avatar"`
+	Description string `json:"description"`
+}
+
+func (up UserPatch) Validate() bool {
+	return up.Name != "" && up.Avatar != "" && up.Description != ""
+}
+
 type ValidationalData struct {
 	IsEmail    bool `json:"isEmail"`
 	IsUsername bool `json:"isUsername"`
@@ -29,7 +38,6 @@ type ValidationalData struct {
 }
 
 func ValidateUser(credentials SignUpCredentials, user User) ValidationalData {
-	fmt.Println(user)
 	return ValidationalData{
 		IsEmail:    user.Email != credentials.Email,
 		IsUsername: user.Username != credentials.Username,

@@ -8,6 +8,7 @@ type UserControllers interface {
 	GetByUsername(c *gin.Context)
 	Profile(c *gin.Context)
 	Search(c *gin.Context)
+	UpdateAccount(c *gin.Context)
 	Logout(c *gin.Context)
 	RefreshTokens(c *gin.Context)
 }
