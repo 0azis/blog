@@ -42,13 +42,17 @@ func userRoutes(r *gin.RouterGroup, store store.Store) {
 
 func postRoutes(r *gin.RouterGroup, store store.Store) {
 	post := r.Group("/posts", middleware.AuthMiddleware)
+	draft := r.Group("/drafts")
 	controllers := controller.NewPostControllers(store)
+
+	draft.POST("", controllers.Create)
+	draft.POST(":id", controllers.Publish)
+	draft.PATCH(":id", controllers.UpdatePost)
+	draft.GET("", controllers.GetDrafts)
+	draft.GET(":id", controllers.GetDraft)
 
 	post.GET("", controllers.GetPosts)
 	post.GET(":id", controllers.GetByID)
-	post.POST("", controllers.Create)
-	post.POST("/publish/:id", controllers.Publish)
-	post.PATCH(":id", controllers.UpdatePost)
 }
 
 func relationRoutes(r *gin.RouterGroup, store store.Store) {

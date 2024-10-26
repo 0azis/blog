@@ -66,9 +66,9 @@ func (p post) GetDrafts(userID int) ([]domain.UserPost, error) {
 	return drafts, err
 }
 
-func (p post) GetDraft(postID int) (domain.UserPost, error) {
+func (p post) GetDraft(userID, postID int) (domain.UserPost, error) {
 	var draft domain.UserPost
-	err := p.db.Get(&draft, `select posts.id, title, date, preview, username, name, avatar, content from posts inner join users on posts.user_id = users.id where posts.id = ? and public = 0`, postID)
+	err := p.db.Get(&draft, `select posts.id, title, date, preview, username, name, avatar, content from posts inner join users on posts.user_id = users.id where posts.id = ? and posts.user_id = ? and public = 0`, postID, userID)
 	return draft, err
 }
 

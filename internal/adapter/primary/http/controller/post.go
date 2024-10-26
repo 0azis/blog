@@ -100,6 +100,39 @@ func (pc postControllers) GetByID(c *gin.Context) {
 	c.JSON(200, post)
 }
 
+func (pc postControllers) GetDrafts(c *gin.Context) {
+	userID := utils.ExtractID(c)
+	drafts, err := pc.store.Post.GetDrafts(userID)
+	if err != nil {
+		slog.Error(err.Error())
+		c.JSON(500, utils.JSON{})
+		return
+	}
+
+	c.JSON(200, drafts)
+}
+
+func (pc postControllers) GetDraft(c *gin.Context) {
+	userID := utils.ExtractID(c)
+	value := c.Param("id")
+	postID, err := strconv.Atoi(value)
+	if err != nil {
+		c.JSON(400, utils.JSON{})
+	}
+	draft, err := pc.store.Post.GetDraft(userID, postID)
+	if errors.Is(err, sql.ErrNoRows) {
+		c.JSON(404, utils.JSON{})
+		return
+	}
+	if err != nil {
+		slog.Error(err.Error())
+		c.JSON(500, utils.JSON{})
+		return
+	}
+
+	c.JSON(200, draft)
+}
+
 func (pc postControllers) Publish(c *gin.Context) {
 	userID := utils.ExtractID(c)
 	value := c.Param("id")
@@ -109,8 +142,11 @@ func (pc postControllers) Publish(c *gin.Context) {
 		return
 	}
 
-	post, err := pc.store.Post.GetDraft(postID)
-	// fmt.Println("test", *post.Title, *post.Content)
+	post, err := pc.store.Post.GetDraft(userID, postID)
+	if errors.Is(err, sql.ErrNoRows) {
+		c.JSON(404, utils.JSON{})
+		return
+	}
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.JSON{})

@@ -27,7 +27,7 @@ type PostRepositoty interface {
 	// Get Drafts
 	GetDrafts(userID int) ([]domain.UserPost, error)
 	// GetDraft
-	GetDraft(postID int) (domain.UserPost, error)
+	GetDraft(userID, postID int) (domain.UserPost, error)
 	// Publish
 	Publish(postID, userID int) (int, error)
 	// Update
