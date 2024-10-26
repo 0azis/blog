@@ -4,7 +4,7 @@ import (
 	"blog/internal/adapter/secondary/store"
 	"blog/internal/core/domain"
 	"blog/internal/core/port/service"
-	"blog/internal/core/utils/http"
+	"blog/internal/core/utils"
 	"database/sql"
 	"errors"
 	"log/slog"
@@ -18,36 +18,36 @@ type postControllers struct {
 }
 
 func (pc postControllers) Create(c *gin.Context) {
-	userID := http.ExtractID(c)
+	userID := utils.ExtractID(c)
 	postCredentials := domain.PostCredentials{}
 	err := c.ShouldBind(&postCredentials)
 	if err != nil {
-		c.JSON(400, http.Err(400))
+		c.JSON(400, utils.JSON{})
 		return
 	}
 	postCredentials.UserID = userID
 	postID, err := pc.store.Post.Create(postCredentials)
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, http.Err(500))
+		c.JSON(500, utils.JSON{})
 		return
 	}
 
-	c.JSON(201, http.JSON{"postID": postID})
+	c.JSON(201, utils.JSON{"postID": postID})
 }
 
 func (pc postControllers) UpdatePost(c *gin.Context) {
-	userID := http.ExtractID(c)
+	userID := utils.ExtractID(c)
 	postCredentials := domain.PostCredentials{}
 	err := c.ShouldBind(&postCredentials)
 	if err != nil {
-		c.JSON(400, http.Err(400))
+		c.JSON(400, utils.JSON{})
 		return
 	}
 	value := c.Param("id")
 	postID, err := strconv.Atoi(value)
 	if err != nil {
-		c.JSON(400, http.Err(400))
+		c.JSON(400, utils.JSON{})
 		return
 	}
 
@@ -55,22 +55,22 @@ func (pc postControllers) UpdatePost(c *gin.Context) {
 	updatedID, err := pc.store.Post.Update(postID, postCredentials)
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, http.Err(500))
+		c.JSON(500, utils.JSON{})
 		return
 	}
 	if updatedID == 0 {
-		c.JSON(404, http.Err(404))
+		c.JSON(404, utils.JSON{})
 		return
 	}
 
-	c.JSON(200, http.JSON{})
+	c.JSON(200, utils.JSON{})
 }
 
 func (pc postControllers) GetPosts(c *gin.Context) {
 	posts, err := pc.store.Post.GetPosts()
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, http.Err(500))
+		c.JSON(500, utils.JSON{})
 		return
 	}
 
@@ -82,18 +82,18 @@ func (pc postControllers) GetByID(c *gin.Context) {
 	value := c.Param("id")
 	postID, err := strconv.Atoi(value)
 	if err != nil {
-		c.JSON(400, http.Err(400))
+		c.JSON(400, utils.JSON{})
 		return
 	}
 
 	post, err := pc.store.Post.GetPost(postID)
 	if errors.Is(err, sql.ErrNoRows) {
-		c.JSON(404, http.Err(404))
+		c.JSON(404, utils.JSON{})
 		return
 	}
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, http.Err(500))
+		c.JSON(500, utils.JSON{})
 		return
 	}
 
@@ -101,11 +101,11 @@ func (pc postControllers) GetByID(c *gin.Context) {
 }
 
 func (pc postControllers) Publish(c *gin.Context) {
-	userID := http.ExtractID(c)
+	userID := utils.ExtractID(c)
 	value := c.Param("id")
 	postID, err := strconv.Atoi(value)
 	if err != nil {
-		c.JSON(400, http.Err(400))
+		c.JSON(400, utils.JSON{})
 		return
 	}
 
@@ -113,26 +113,26 @@ func (pc postControllers) Publish(c *gin.Context) {
 	// fmt.Println("test", *post.Title, *post.Content)
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, http.Err(500))
+		c.JSON(500, utils.JSON{})
 		return
 	}
 	if !post.Validate() {
-		c.JSON(400, http.Err(400))
+		c.JSON(400, utils.JSON{})
 		return
 	}
 
 	publishedID, err := pc.store.Post.Publish(postID, userID)
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, http.Err(500))
+		c.JSON(500, utils.JSON{})
 		return
 	}
 	if publishedID == 0 {
-		c.JSON(404, http.Err(404))
+		c.JSON(404, utils.JSON{})
 		return
 	}
 
-	c.JSON(200, http.JSON{})
+	c.JSON(200, utils.JSON{})
 }
 
 func NewPostControllers(store store.Store) service.PostControllers {

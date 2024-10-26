@@ -4,7 +4,7 @@ import (
 	"blog/internal/adapter/secondary/store"
 	"blog/internal/core/domain"
 	"blog/internal/core/port/service"
-	"blog/internal/core/utils/http"
+	"blog/internal/core/utils"
 	"database/sql"
 	"errors"
 	"log/slog"
@@ -21,20 +21,20 @@ func (cc commentControllers) NewComment(c *gin.Context) {
 	var comment domain.Comment
 	err := c.ShouldBind(&comment)
 	if err != nil {
-		c.JSON(400, http.Err(400))
+		c.JSON(400, utils.JSON{})
 		return
 	}
-	userID := http.ExtractID(c)
+	userID := utils.ExtractID(c)
 	comment.UserID = userID
 
 	err = cc.store.Comment.Create(comment)
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, http.Err(500))
+		c.JSON(500, utils.JSON{})
 		return
 	}
 
-	c.JSON(201, http.JSON{})
+	c.JSON(201, utils.JSON{})
 }
 
 func (cc commentControllers) GetCommentsByPost(c *gin.Context) {
@@ -42,13 +42,13 @@ func (cc commentControllers) GetCommentsByPost(c *gin.Context) {
 	postID, err := strconv.Atoi(value)
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(400, http.Err(400))
+		c.JSON(400, utils.JSON{})
 		return
 	}
 
 	comments, err := cc.store.Comment.GetByPostID(postID)
 	if err != nil {
-		c.JSON(500, http.Err(500))
+		c.JSON(500, utils.JSON{})
 		return
 	}
 
@@ -59,18 +59,18 @@ func (cc commentControllers) GetComment(c *gin.Context) {
 	value := c.Param("id")
 	commentID, err := strconv.Atoi(value)
 	if err != nil {
-		c.JSON(400, http.Err(400))
+		c.JSON(400, utils.JSON{})
 		return
 	}
 
 	comment, err := cc.store.Comment.GetByID(commentID)
 	if errors.Is(err, sql.ErrNoRows) {
-		c.JSON(404, http.Err(404))
+		c.JSON(404, utils.JSON{})
 		return
 	}
 	if err != nil {
 		slog.Error(err.Error())
-		c.JSON(500, http.Err(500))
+		c.JSON(500, utils.JSON{})
 		return
 	}
 
