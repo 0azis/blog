@@ -20,9 +20,6 @@ func (p post) Create(post domain.PostCredentials) (int, error) {
 }
 
 func (p post) Update(postID int, post domain.PostCredentials) (int, error) {
-	// q := fmt.Sprintf(`update posts set title = '%s', preview = '%s', content = '%s', tags = '%v' where user_id = %d and id = %d`, post.Title, post.Preview, post.Content, pq.Array(post.Tags), post.UserID, postID)
-	// fmt.Println(q)
-	// sqlResult, err := p.db.Exec(q)
 	sqlResult, err := p.db.Exec(`update posts set title = ?, preview = ?, content = ? where user_id = ? and id = ?`, post.Title, post.Preview, post.Content, post.UserID, postID)
 	if err != nil {
 		return 0, err
@@ -33,7 +30,7 @@ func (p post) Update(postID int, post domain.PostCredentials) (int, error) {
 
 func (p post) GetPosts() ([]domain.UserPost, error) {
 	var posts []domain.UserPost
-	err := p.db.Select(&posts, `select posts.id, title, date, preview, username, name, avatar, content from posts inner join users on posts.user_id = users.id where public = 1`)
+	err := p.db.Select(&posts, `select posts.id, title, date, preview, username, name, avatar, content, count(views.user_id) as views from posts inner join users on posts.user_id = users.id inner join views on posts.id = views.post_id where public = 1 group by posts.id`)
 	// _, err := p.db.Query(`select posts.id, title, date, preview, username, name, avatar from posts inner join users on posts.user_id = users.id where public = 1`)
 	if err != nil {
 		return posts, err
@@ -44,18 +41,11 @@ func (p post) GetPosts() ([]domain.UserPost, error) {
 
 func (p post) GetPost(postID int) (domain.UserPost, error) {
 	var post domain.UserPost
-	err := p.db.Get(&post, `select posts.id, title, date, preview, username, name, avatar, content from posts inner join users on posts.user_id = users.id where posts.id = ? and public = 1`, postID)
+	err := p.db.Get(&post, `select posts.id, title, date, preview, username, name, avatar, content, count(views.user_id) as views from posts inner join users on posts.user_id = users.id inner join views on posts.id = views.post_id where posts.id = ? and public = 1 group by posts.id`, postID)
 	// rows, err := p.db.Query(`select posts.id, title, date, preview, username, name, avatar, content from posts inner join users on posts.user_id = users.id where posts.id = ? and public = 1`, postID)
 	if err != nil {
 		return post, err
 	}
-
-	// for rows.Next() {
-	// 	err = rows.Scan(&post.ID, &post.Title, &post.Date, &post.Preview, &post.User.Username, &post.User.Name, &post.User.Avatar, &post.Content)
-	// 	if err != nil {
-	// 		return post, err
-	// 	}
-	// }
 
 	return post, nil
 }

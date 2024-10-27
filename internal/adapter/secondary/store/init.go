@@ -13,6 +13,7 @@ type Store struct {
 	Relation repository.RelationRepository
 	Tag      repository.TagRepository
 	Comment  repository.CommentRepository
+	View     repository.ViewRepository
 }
 
 func NewStore(uri string) (Store, error) {
@@ -24,6 +25,7 @@ func NewStore(uri string) (Store, error) {
 		relation{db},
 		tag{db},
 		comment{db},
+		view{db},
 	}
 	return store, err
 }

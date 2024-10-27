@@ -57,10 +57,11 @@ CREATE TABLE
 --         foreign key (post_id) references posts (id) on delete cascade
 --     );
 
--- CREATE TABLE
---     views (
---         post_id smallint not null,
---         user_id smallint not null,
---         foreign key (user_id) references users (id) on delete no action,
---         foreign key (post_id) references posts (id) on delete cascade,
---     );
+CREATE TABLE
+    views (
+        post_id smallint not null,
+        user_id smallint not null,
+        foreign key (user_id) references users (id) on delete no action,
+        foreign key (post_id) references posts (id) on delete cascade,
+        primary key (post_id, user_id)
+    );

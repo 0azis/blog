@@ -13,6 +13,7 @@ type UserPost struct {
 	Name     *string   `json:"name" db:"name"`
 	Avatar   *string   `json:"avatar" db:"avatar"`
 	Content  *string   `json:"content" db:"content"`
+	Views    int       `json:"views" db:"views"`
 }
 
 func (up UserPost) Validate() bool {

@@ -35,8 +35,8 @@ type PostRepositoty interface {
 }
 
 type RelationRepository interface {
-	SubscribersCount(userID int) (int, error)
-	FollowersCount(userID int) (int, error)
+	Subscribers(userID int) ([]domain.User, error)
+	Followers(userID int) ([]domain.User, error)
 	Subscribe(userID, profileID int) error
 }
 
@@ -47,7 +47,12 @@ type TagRepository interface {
 }
 
 type CommentRepository interface {
-	Create(comment domain.Comment) error
+	Create(comment domain.CommentCredentials) error
 	GetByPostID(postID int) ([]domain.Comment, error)
 	GetByID(ID int) (domain.Comment, error)
+}
+
+type ViewRepository interface {
+	AddView(view domain.View) error
+	ViewsCount(postID int) (int, error)
 }

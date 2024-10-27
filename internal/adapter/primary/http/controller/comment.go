@@ -18,7 +18,7 @@ type commentControllers struct {
 }
 
 func (cc commentControllers) NewComment(c *gin.Context) {
-	var comment domain.Comment
+	var comment domain.CommentCredentials
 	err := c.ShouldBind(&comment)
 	if err != nil {
 		c.JSON(400, utils.JSON{})
@@ -41,18 +41,22 @@ func (cc commentControllers) GetCommentsByPost(c *gin.Context) {
 	value := c.Param("id")
 	postID, err := strconv.Atoi(value)
 	if err != nil {
-		slog.Error(err.Error())
 		c.JSON(400, utils.JSON{})
 		return
 	}
 
 	comments, err := cc.store.Comment.GetByPostID(postID)
+	if errors.Is(err, sql.ErrNoRows) {
+		c.JSON(404, utils.JSON{})
+		return
+	}
 	if err != nil {
+		slog.Error(err.Error())
 		c.JSON(500, utils.JSON{})
 		return
 	}
 
-	c.JSON(200, comments)
+	c.JSON(200, utils.JSON{"comments": comments, "commentsCount": len(comments)})
 }
 
 func (cc commentControllers) GetComment(c *gin.Context) {

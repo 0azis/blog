@@ -10,7 +10,7 @@ type comment struct {
 	db *sqlx.DB
 }
 
-func (c comment) Create(comment domain.Comment) error {
+func (c comment) Create(comment domain.CommentCredentials) error {
 	_, err := c.db.Query(`insert into comments (post_id, user_id, text) values (?, ?, ?)`, comment.PostID, comment.UserID, comment.Text)
 	return err
 }

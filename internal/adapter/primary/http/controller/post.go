@@ -75,10 +75,10 @@ func (pc postControllers) GetPosts(c *gin.Context) {
 	}
 
 	c.JSON(200, posts)
-
 }
 
 func (pc postControllers) GetByID(c *gin.Context) {
+	userID := utils.ExtractID(c)
 	value := c.Param("id")
 	postID, err := strconv.Atoi(value)
 	if err != nil {
@@ -91,6 +91,17 @@ func (pc postControllers) GetByID(c *gin.Context) {
 		c.JSON(404, utils.JSON{})
 		return
 	}
+	if err != nil {
+		slog.Error(err.Error())
+		c.JSON(500, utils.JSON{})
+		return
+	}
+
+	view := domain.View{
+		PostID: post.ID,
+		UserID: userID,
+	}
+	err = pc.store.View.AddView(view)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.JSON{})

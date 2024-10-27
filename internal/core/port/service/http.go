@@ -44,3 +44,7 @@ type CommentControllres interface {
 	GetCommentsByPost(c *gin.Context)
 	GetComment(c *gin.Context)
 }
+
+type ViewControllers interface {
+	ViewsCount(c *gin.Context)
+}

@@ -6,3 +6,9 @@ type Comment struct {
 	UserID int    `json:"userID" db:"user_id"`
 	Text   string `json:"text" db:"text"`
 }
+
+type CommentCredentials struct {
+	UserID int    `json:"userID"`
+	PostID int    `json:"postID"`
+	Text   string `json:"text"`
+}

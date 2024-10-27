@@ -23,6 +23,11 @@ func (rc relationControllers) Subscribe(c *gin.Context) {
 		return
 	}
 
+	if userID == authorID {
+		c.JSON(400, utils.JSON{})
+		return
+	}
+
 	err = rc.store.Relation.Subscribe(userID, authorID)
 	if err != nil {
 		slog.Error(err.Error())
@@ -35,26 +40,26 @@ func (rc relationControllers) Subscribe(c *gin.Context) {
 
 func (rc relationControllers) Followers(c *gin.Context) {
 	userID := utils.ExtractID(c)
-	followers, err := rc.store.Relation.FollowersCount(userID)
+	followers, err := rc.store.Relation.Followers(userID)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.JSON{})
 		return
 	}
 
-	c.JSON(200, utils.JSON{"followersCount": followers})
+	c.JSON(200, utils.JSON{"followers": followers, "followersCount": len(followers)})
 }
 
 func (rc relationControllers) Subscribers(c *gin.Context) {
 	userID := utils.ExtractID(c)
-	subscribers, err := rc.store.Relation.SubscribersCount(userID)
+	subscribers, err := rc.store.Relation.Subscribers(userID)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.JSON{})
 		return
 	}
 
-	c.JSON(200, utils.JSON{"subscribersCount": subscribers})
+	c.JSON(200, utils.JSON{"subscribers": subscribers, "subscribersCount": len(subscribers)})
 }
 
 func NewRelationControllers(store store.Store) service.RelationControllers {
