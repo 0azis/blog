@@ -120,7 +120,7 @@ func (pc postControllers) GetDrafts(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, drafts)
+	c.JSON(200, utils.JSON{"drafts": drafts, "draftsCount": len(drafts)})
 }
 
 func (pc postControllers) GetDraft(c *gin.Context) {
