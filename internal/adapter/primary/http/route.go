@@ -60,8 +60,8 @@ func relationRoutes(r *gin.RouterGroup, store store.Store) {
 	controllers := controller.NewRelationControllers(store)
 
 	relation.POST("/subscribers/:id", controllers.Subscribe)
-	relation.GET("/subscribers", controllers.Subscribers)
-	relation.GET("/followers", controllers.Followers)
+	relation.GET("/subscribers/:id", controllers.Subscribers)
+	relation.GET("/followers/:id", controllers.Followers)
 }
 
 func tagRoutes(r *gin.RouterGroup, store store.Store) {

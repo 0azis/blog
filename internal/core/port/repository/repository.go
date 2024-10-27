@@ -35,8 +35,8 @@ type PostRepositoty interface {
 }
 
 type RelationRepository interface {
-	Subscribers(userID int) ([]domain.User, error)
-	Followers(userID int) ([]domain.User, error)
+	Subscribers(userID int) ([]*domain.User, error)
+	Followers(userID int) ([]*domain.User, error)
 	Subscribe(userID, profileID int) error
 }
 
