@@ -35,9 +35,6 @@ func userRoutes(r *gin.RouterGroup, store store.Store) {
 	auth.POST("/signup", controllers.SignUp)
 	auth.POST("/refresh", middleware.RefreshMiddleware, controllers.RefreshTokens)
 	auth.POST("/logout", middleware.AuthMiddleware, controllers.Logout)
-
-	// account := r.Group("/account")
-	// account.POST("")
 }
 
 func postRoutes(r *gin.RouterGroup, store store.Store) {
@@ -51,8 +48,9 @@ func postRoutes(r *gin.RouterGroup, store store.Store) {
 	draft.GET("", controllers.GetDrafts)
 	draft.GET(":id", controllers.GetDraft)
 
-	post.GET("", controllers.GetPosts)
+	post.GET("/author/:id", controllers.GetPostsByUser)
 	post.GET(":id", controllers.GetByID)
+	post.GET("/author", controllers.MyPosts)
 }
 
 func relationRoutes(r *gin.RouterGroup, store store.Store) {

@@ -21,9 +21,9 @@ type PostRepositoty interface {
 	// Create a post in the database
 	Create(post domain.PostCredentials) (int, error)
 	// GetAll
-	GetPosts() ([]domain.UserPost, error)
+	GetPostsByUser(userID int) ([]domain.UserPost, error)
 	// GetOne
-	GetPost(postID int) (domain.UserPost, error)
+	GetPostByID(postID int) (domain.UserPost, error)
 	// Get Drafts
 	GetDrafts(userID int) ([]domain.UserPost, error)
 	// GetDraft

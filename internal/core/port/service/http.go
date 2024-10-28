@@ -15,7 +15,8 @@ type UserControllers interface {
 
 type PostControllers interface {
 	Create(c *gin.Context)
-	GetPosts(c *gin.Context)
+	GetPostsByUser(c *gin.Context)
+	MyPosts(c *gin.Context)
 	GetByID(c *gin.Context)
 	GetDrafts(c *gin.Context)
 	GetDraft(c *gin.Context)

@@ -28,10 +28,9 @@ func (p post) Update(postID int, post domain.PostCredentials) (int, error) {
 	return int(lastID), err
 }
 
-func (p post) GetPosts() ([]domain.UserPost, error) {
+func (p post) GetPostsByUser(userID int) ([]domain.UserPost, error) {
 	var posts []domain.UserPost
-	err := p.db.Select(&posts, `select posts.id, title, date, preview, username, name, avatar, content, count(views.user_id) as views from posts inner join users on posts.user_id = users.id inner join views on posts.id = views.post_id where public = 1 group by posts.id`)
-	// _, err := p.db.Query(`select posts.id, title, date, preview, username, name, avatar from posts inner join users on posts.user_id = users.id where public = 1`)
+	err := p.db.Select(&posts, `select posts.id, title, date, preview, username, name, avatar, content, count(views.user_id) as views from posts inner join users on posts.user_id = users.id left join views on posts.id = views.post_id where public = 1 and posts.user_id = ? group by posts.id`, userID)
 	if err != nil {
 		return posts, err
 	}
@@ -39,9 +38,9 @@ func (p post) GetPosts() ([]domain.UserPost, error) {
 	return posts, err
 }
 
-func (p post) GetPost(postID int) (domain.UserPost, error) {
+func (p post) GetPostByID(postID int) (domain.UserPost, error) {
 	var post domain.UserPost
-	err := p.db.Get(&post, `select posts.id, title, date, preview, username, name, avatar, content, count(views.user_id) as views from posts inner join users on posts.user_id = users.id inner join views on posts.id = views.post_id where posts.id = ? and public = 1 group by posts.id`, postID)
+	err := p.db.Get(&post, `select posts.id, title, date, preview, username, name, avatar, content, count(views.user_id) as views from posts inner join users on posts.user_id = users.id left join views on posts.id = views.post_id where posts.id = ? and public = 1 group by posts.id`, postID)
 	// rows, err := p.db.Query(`select posts.id, title, date, preview, username, name, avatar, content from posts inner join users on posts.user_id = users.id where posts.id = ? and public = 1`, postID)
 	if err != nil {
 		return post, err

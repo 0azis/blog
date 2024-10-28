@@ -66,8 +66,15 @@ func (pc postControllers) UpdatePost(c *gin.Context) {
 	c.JSON(200, utils.JSON{})
 }
 
-func (pc postControllers) GetPosts(c *gin.Context) {
-	posts, err := pc.store.Post.GetPosts()
+func (pc postControllers) GetPostsByUser(c *gin.Context) {
+	value := c.Param("id")
+	userID, err := strconv.Atoi(value)
+	if err != nil {
+		c.JSON(400, utils.JSON{})
+		return
+	}
+
+	posts, err := pc.store.Post.GetPostsByUser(userID)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.JSON{})
@@ -86,7 +93,7 @@ func (pc postControllers) GetByID(c *gin.Context) {
 		return
 	}
 
-	post, err := pc.store.Post.GetPost(postID)
+	post, err := pc.store.Post.GetPostByID(postID)
 	if errors.Is(err, sql.ErrNoRows) {
 		c.JSON(404, utils.JSON{})
 		return
@@ -142,6 +149,17 @@ func (pc postControllers) GetDraft(c *gin.Context) {
 	}
 
 	c.JSON(200, draft)
+}
+
+func (pc postControllers) MyPosts(c *gin.Context) {
+	userID := utils.ExtractID(c)
+	posts, err := pc.store.Post.GetPostsByUser(userID)
+	if err != nil {
+		c.JSON(500, utils.JSON{})
+		return
+	}
+
+	c.JSON(200, posts)
 }
 
 func (pc postControllers) Publish(c *gin.Context) {
