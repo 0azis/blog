@@ -81,7 +81,7 @@ func (pc postControllers) GetPostsByUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, posts)
+	c.JSON(200, utils.JSON{"posts": posts, "postsCount": len(posts)})
 }
 
 func (pc postControllers) GetByID(c *gin.Context) {
@@ -159,7 +159,7 @@ func (pc postControllers) MyPosts(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, posts)
+	c.JSON(200, utils.JSON{"posts": posts, "postsCount": len(posts)})
 }
 
 func (pc postControllers) Publish(c *gin.Context) {
