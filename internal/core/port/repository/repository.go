@@ -21,13 +21,13 @@ type PostRepositoty interface {
 	// Create a post in the database
 	Create(post domain.PostCredentials) (int, error)
 	// GetAll
-	GetPostsByUser(userID int) ([]domain.UserPost, error)
+	GetPostsByUser(userID int) ([]*domain.Post, error)
 	// GetOne
-	GetPostByID(postID int) (domain.UserPost, error)
+	GetPostByID(postID int) (domain.Post, error)
 	// Get Drafts
-	GetDrafts(userID int) ([]domain.UserPost, error)
+	GetDrafts(userID int) ([]*domain.Post, error)
 	// GetDraft
-	GetDraft(userID, postID int) (domain.UserPost, error)
+	GetDraft(userID, postID int) (domain.Post, error)
 	// Publish
 	Publish(postID, userID int) (int, error)
 	// Update
@@ -42,7 +42,7 @@ type RelationRepository interface {
 
 type TagRepository interface {
 	Create(tag domain.Tag) (int64, error)
-	GetByPostID(postID int) (domain.Tag, error)
+	GetByPostID(postID int) (domain.Tags, error)
 	GetByPopularity() (domain.Tags, error)
 }
 

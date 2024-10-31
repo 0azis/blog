@@ -81,6 +81,16 @@ func (pc postControllers) GetPostsByUser(c *gin.Context) {
 		return
 	}
 
+	for _, post := range posts {
+		tags, err := pc.store.Tag.GetByPostID(post.ID)
+		if err != nil {
+			c.JSON(500, utils.JSON{})
+			return
+		}
+
+		post.Tags = tags
+	}
+
 	c.JSON(200, utils.JSON{"posts": posts, "postsCount": len(posts)})
 }
 
@@ -103,6 +113,14 @@ func (pc postControllers) GetByID(c *gin.Context) {
 		c.JSON(500, utils.JSON{})
 		return
 	}
+
+	tags, err := pc.store.Tag.GetByPostID(post.ID)
+	if err != nil {
+		slog.Error(err.Error())
+		c.JSON(500, utils.JSON{})
+		return
+	}
+	post.Tags = tags
 
 	view := domain.View{
 		PostID: post.ID,
@@ -127,6 +145,15 @@ func (pc postControllers) GetDrafts(c *gin.Context) {
 		return
 	}
 
+	for _, draft := range drafts {
+		tags, err := pc.store.Tag.GetByPostID(draft.ID)
+		if err != nil {
+			c.JSON(500, utils.JSON{})
+			return
+		}
+		draft.Tags = tags
+	}
+
 	c.JSON(200, utils.JSON{"drafts": drafts, "draftsCount": len(drafts)})
 }
 
@@ -148,6 +175,13 @@ func (pc postControllers) GetDraft(c *gin.Context) {
 		return
 	}
 
+	tags, err := pc.store.Tag.GetByPostID(draft.ID)
+	if err != nil {
+		c.JSON(500, utils.JSON{})
+		return
+	}
+	draft.Tags = tags
+
 	c.JSON(200, draft)
 }
 
@@ -157,6 +191,16 @@ func (pc postControllers) MyPosts(c *gin.Context) {
 	if err != nil {
 		c.JSON(500, utils.JSON{})
 		return
+	}
+
+	for _, post := range posts {
+		tags, err := pc.store.Tag.GetByPostID(post.ID)
+		if err != nil {
+			c.JSON(500, utils.JSON{})
+			return
+		}
+
+		post.Tags = tags
 	}
 
 	c.JSON(200, utils.JSON{"posts": posts, "postsCount": len(posts)})

@@ -21,6 +21,13 @@ func (u *User) SetOwnership(jwtUserID int) {
 	}
 }
 
+type Author struct {
+	ID       int     `json:"id" db:"id"`
+	Username string  `json:"username" db:"username"`
+	Name     string  `json:"name" db:"name"`
+	Avatar   *string `json:"avatar" db:"avatar"`
+}
+
 type UserPatch struct {
 	Name        string `json:"name"`
 	Avatar      string `json:"avatar"`

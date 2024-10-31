@@ -28,36 +28,51 @@ func (p post) Update(postID int, post domain.PostCredentials) (int, error) {
 	return int(lastID), err
 }
 
-func (p post) GetPostsByUser(userID int) ([]domain.UserPost, error) {
-	var posts []domain.UserPost
-	err := p.db.Select(&posts, `select posts.id, title, date, preview, username, name, avatar, content, count(views.user_id) as views from posts inner join users on posts.user_id = users.id left join views on posts.id = views.post_id where public = 1 and posts.user_id = ? group by posts.id`, userID)
+func (p post) GetPostsByUser(userID int) ([]*domain.Post, error) {
+	var posts []*domain.Post
+	rows, err := p.db.Query(`select posts.id, posts.title, posts.preview, posts.date, posts.content, count(views.user_id) as views, users.id, users.username, users.name, users.avatar from posts inner join users on posts.user_id = users.id left join views on posts.id = views.post_id where public = 1 and posts.user_id = ? group by posts.id`, userID)
 	if err != nil {
 		return posts, err
 	}
 
-	return posts, err
+	for rows.Next() {
+		var post domain.Post
+		err = rows.Scan(&post.ID, &post.Title, &post.Preview, &post.Date, &post.Content, &post.Views, &post.Author.ID, &post.Author.Username, &post.Author.Name, &post.Author.Avatar)
+		if err != nil {
+			return posts, err
+		}
+		posts = append(posts, &post)
+	}
+
+	return posts, nil
 }
 
-func (p post) GetPostByID(postID int) (domain.UserPost, error) {
-	var post domain.UserPost
-	err := p.db.Get(&post, `select posts.id, title, date, preview, username, name, avatar, content, count(views.user_id) as views from posts inner join users on posts.user_id = users.id left join views on posts.id = views.post_id where posts.id = ? and public = 1 group by posts.id`, postID)
-	// rows, err := p.db.Query(`select posts.id, title, date, preview, username, name, avatar, content from posts inner join users on posts.user_id = users.id where posts.id = ? and public = 1`, postID)
+func (p post) GetPostByID(postID int) (domain.Post, error) {
+	var post domain.Post
+	rows, err := p.db.Query(`select posts.id, posts.title, posts.preview, posts.date, posts.content, count(views.user_id) as views, users.id, users.username, users.name, users.avatar from posts inner join users on posts.user_id = users.id left join views on posts.id = views.post_id where public = 1 and posts.id = ? group by posts.id`, postID)
 	if err != nil {
 		return post, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&post.ID, &post.Title, &post.Preview, &post.Date, &post.Content, &post.Views, &post.Author.ID, &post.Author.Username, &post.Author.Name, &post.Author.Avatar)
+		if err != nil {
+			return post, err
+		}
 	}
 
 	return post, nil
 }
 
-func (p post) GetDrafts(userID int) ([]domain.UserPost, error) {
-	var drafts []domain.UserPost
-	err := p.db.Select(&drafts, `select posts.id, title, date, preview, username, name, avatar, content from posts inner join users on posts.user_id = users.id where user_id = ? and public = 0`, userID)
+func (p post) GetDrafts(userID int) ([]*domain.Post, error) {
+	var drafts []*domain.Post
+	err := p.db.Select(&drafts, `select posts.id, posts.title, posts.preview, posts.date, posts.content from posts inner join users on posts.user_id = users.id where public = 0 and posts.user_id= ? group by posts.id`, userID)
 	return drafts, err
 }
 
-func (p post) GetDraft(userID, postID int) (domain.UserPost, error) {
-	var draft domain.UserPost
-	err := p.db.Get(&draft, `select posts.id, title, date, preview, username, name, avatar, content from posts inner join users on posts.user_id = users.id where posts.id = ? and posts.user_id = ? and public = 0`, postID, userID)
+func (p post) GetDraft(userID, postID int) (domain.Post, error) {
+	var draft domain.Post
+	err := p.db.Get(&draft, `select posts.id, posts.title, posts.preview, posts.date, posts.content from posts inner join users on posts.user_id = users.id where posts.id = ? and posts.user_id = ? and public = 0`, postID, userID)
 	return draft, err
 }
 

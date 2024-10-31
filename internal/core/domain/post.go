@@ -4,20 +4,19 @@ import (
 	"time"
 )
 
-type UserPost struct {
-	ID       int       `json:"id" db:"id"`
-	Title    *string   `json:"title" db:"title"`
-	Date     time.Time `json:"createdAt" db:"date"`
-	Preview  *string   `json:"preview" db:"preview"`
-	Username string    `json:"username" db:"username"`
-	Name     *string   `json:"name" db:"name"`
-	Avatar   *string   `json:"avatar" db:"avatar"`
-	Content  *string   `json:"content" db:"content"`
-	Views    int       `json:"views" db:"views"`
+type Post struct {
+	ID      int       `json:"id"`
+	Title   *string   `json:"title" db:"title"`
+	Date    time.Time `json:"createdAt" db:"date"`
+	Preview *string   `json:"preview" db:"preview"`
+	Author  Author    `json:"author"`
+	Content *string   `json:"content" db:"content"`
+	Views   int       `json:"views" db:"views"`
+	Tags    Tags      `json:"tags"`
 }
 
-func (up UserPost) Validate() bool {
-	return *up.Title != "" && *up.Content != ""
+func (p Post) Validate() bool {
+	return *p.Title != "" && *p.Content != ""
 }
 
 type PostCredentials struct {

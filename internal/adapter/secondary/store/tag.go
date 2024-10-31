@@ -24,7 +24,7 @@ func (t tag) Create(tag domain.Tag) (int64, error) {
 			return lastID, err
 		}
 		lastID, err = sqlResult.RowsAffected()
-		if err != nil || lastID == 0 {
+		if err != nil {
 			return lastID, err
 		}
 	}
@@ -32,23 +32,21 @@ func (t tag) Create(tag domain.Tag) (int64, error) {
 	return lastID, nil
 }
 
-func (t tag) GetByPostID(postID int) (domain.Tag, error) {
-	var tags domain.Tag
-	rows, err := t.db.Query(`select * from tags where post_id = ?`, postID)
+func (t tag) GetByPostID(postID int) (domain.Tags, error) {
+	var tags domain.Tags
+	rows, err := t.db.Query(`select tag from tags where post_id = ?`, postID)
 	if err != nil {
 		return tags, err
 	}
 
 	for rows.Next() {
 		var tag string
-		var postID int
-		err = rows.Scan(&postID, &tag)
+		err = rows.Scan(&tag)
 		if err != nil {
 			return tags, err
 		}
 
-		tags.PostID = postID
-		tags.Tags = append(tags.Tags, tag)
+		tags = append(tags, tag)
 	}
 
 	return tags, nil
