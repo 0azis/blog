@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"log/slog"
 	nethttp "net/http"
-	"strconv"
 
 	_ "blog/cmd/docs"
 
@@ -150,26 +149,25 @@ func (uc userControllers) GetByUsername(c *gin.Context) {
 
 func (uc userControllers) Search(c *gin.Context) {
 	userID := utils.ExtractID(c)
-	limit, err := strconv.Atoi(c.Query("limit"))
-	if err != nil || limit < 0 {
+	q := map[string]string{}
+	err := c.BindQuery(&q)
+	if err != nil {
+		slog.Error(err.Error())
 		c.JSON(400, utils.JSON{})
 		return
 	}
-	page, err := strconv.Atoi(c.Query("page"))
-	page--
-	if err != nil || page < 0 {
+	queryMap := utils.NewQueryMapper(q)
+	paginationQueries, err := queryMap.PaginationQuery()
+	if err != nil {
+		slog.Error(err.Error())
 		c.JSON(400, utils.JSON{})
 		return
-	}
-
-	if limit == 0 {
-		limit = 10
 	}
 
 	query := c.Query("q")
 	search_query := "%" + query + "%"
 
-	queryUsers, err := uc.store.User.Search(search_query, limit, page)
+	queryUsers, err := uc.store.User.Search(search_query, paginationQueries["limit"], paginationQueries["page"])
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.JSON{})

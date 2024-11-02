@@ -28,6 +28,8 @@ type PostRepositoty interface {
 	GetDrafts(userID int) ([]*domain.Post, error)
 	// GetDraft
 	GetDraft(userID, postID int) (domain.Post, error)
+	// GetByTag
+	GetByTag(tag string) ([]*domain.Post, error)
 	// Publish
 	Publish(postID, userID int) (int, error)
 	// Update

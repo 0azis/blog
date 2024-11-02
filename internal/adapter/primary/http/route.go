@@ -51,6 +51,7 @@ func postRoutes(r *gin.RouterGroup, store store.Store) {
 	post.GET("/author/:id", controllers.GetPostsByUser)
 	post.GET(":id", controllers.GetByID)
 	post.GET("/author", controllers.MyPosts)
+	post.GET("", controllers.GetPosts)
 }
 
 func relationRoutes(r *gin.RouterGroup, store store.Store) {

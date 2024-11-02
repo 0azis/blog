@@ -20,6 +20,7 @@ type PostControllers interface {
 	GetByID(c *gin.Context)
 	GetDrafts(c *gin.Context)
 	GetDraft(c *gin.Context)
+	GetPosts(c *gin.Context)
 	Publish(c *gin.Context)
 	UpdatePost(c *gin.Context)
 }

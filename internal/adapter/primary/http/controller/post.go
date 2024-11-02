@@ -206,6 +206,18 @@ func (pc postControllers) MyPosts(c *gin.Context) {
 	c.JSON(200, utils.JSON{"posts": posts, "postsCount": len(posts)})
 }
 
+func (pc postControllers) GetPosts(c *gin.Context) {
+	// tag := c.Query("tag")
+	// sort := c.Query("sort")
+	q := utils.QueryMap{}
+	err := c.BindQuery(&q)
+	if err != nil {
+		c.JSON(500, utils.JSON{"err": err})
+		return
+	}
+	c.JSON(200, q)
+}
+
 func (pc postControllers) Publish(c *gin.Context) {
 	userID := utils.ExtractID(c)
 	value := c.Param("id")
