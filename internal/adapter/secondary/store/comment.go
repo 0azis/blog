@@ -17,12 +17,33 @@ func (c comment) Create(comment domain.CommentCredentials) error {
 
 func (c comment) GetByPostID(postID int) ([]domain.Comment, error) {
 	var comments []domain.Comment
-	err := c.db.Select(&comments, `select * from comments where post_id = ?`, postID)
-	return comments, err
+	rows, err := c.db.Query(`select comments.id, comments.post_id, comments.text, users.id, users.username, users.name, users.avatar from comments inner join users on comments.user_id = users.id where comments.post_id = ?`, postID)
+	if err != nil {
+		return comments, err
+	}
+
+	for rows.Next() {
+		var comment domain.Comment
+		err = rows.Scan(&comment.ID, &comment.PostID, &comment.Text, &comment.Author.ID, &comment.Author.Username, &comment.Author.Name, &comment.Author.Avatar)
+		if err != nil {
+			return comments, err
+		}
+		comments = append(comments, comment)
+	}
+
+	return comments, nil
 }
 
 func (c comment) GetByID(ID int) (domain.Comment, error) {
 	var comment domain.Comment
-	err := c.db.Get(&comment, `select * from comments where id = ?`, ID)
+	rows, err := c.db.Query(`select comments.id, comments.post_id, comments.text, users.id, users.username, users.name, users.avatar from comments inner join users on comments.user_id = users.id where comments.id= ?`, ID)
+	if err != nil {
+		return comment, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&comment.ID, &comment.PostID, &comment.Text, &comment.Author.ID, &comment.Author.Username, &comment.Author.Name, &comment.Author.Avatar)
+	}
+
 	return comment, err
 }

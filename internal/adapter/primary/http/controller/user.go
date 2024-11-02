@@ -7,7 +7,6 @@ import (
 	"blog/internal/core/utils"
 	"database/sql"
 	"errors"
-	"fmt"
 	"log/slog"
 	nethttp "net/http"
 
@@ -120,6 +119,7 @@ func (uc userControllers) Profile(c *gin.Context) {
 		return
 	}
 	if err != nil {
+		slog.Error(err.Error())
 		c.JSON(500, utils.JSON{})
 		return
 	}
@@ -148,7 +148,6 @@ func (uc userControllers) GetByUsername(c *gin.Context) {
 }
 
 func (uc userControllers) Search(c *gin.Context) {
-	userID := utils.ExtractID(c)
 	q := map[string]string{}
 	err := c.BindQuery(&q)
 	if err != nil {
@@ -172,11 +171,6 @@ func (uc userControllers) Search(c *gin.Context) {
 		slog.Error(err.Error())
 		c.JSON(500, utils.JSON{})
 		return
-	}
-
-	for _, user := range queryUsers {
-		fmt.Println(user.ID, userID)
-		user.SetOwnership(userID)
 	}
 
 	c.JSON(200, queryUsers)

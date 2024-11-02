@@ -12,7 +12,7 @@ type UserRepository interface {
 	// GetByEmail returns userID by its email
 	CheckCredentials(email, username string) (domain.User, error)
 	// GetByusername get user by its username
-	Search(q string, limit, page int) ([]*domain.User, error)
+	Search(q string, limit, page int) ([]*domain.UserCard, error)
 	// Update
 	Update(userID int, updatedData domain.UserPatch) (int, error)
 }
@@ -37,9 +37,9 @@ type PostRepositoty interface {
 }
 
 type RelationRepository interface {
-	Subscribers(userID int) ([]*domain.User, error)
-	Followers(userID int) ([]*domain.User, error)
-	Subscribe(userID, profileID int) error
+	Subscribers(userID int) ([]*domain.UserCard, error)
+	Followers(userID int) ([]*domain.UserCard, error)
+	Subscribe(userID, authorID int) error
 }
 
 type TagRepository interface {

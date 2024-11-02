@@ -1,6 +1,11 @@
 package domain
 
-type Relation struct {
-	ID_1 int `db:"id_1"`
-	ID_2 int `db:"id_2"`
+type Followers struct {
+	UserID     int
+	FollowerID int
+}
+
+type Subscribers struct {
+	UserID       int
+	SubscriberID int
 }

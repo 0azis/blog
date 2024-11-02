@@ -39,7 +39,6 @@ func (rc relationControllers) Subscribe(c *gin.Context) {
 }
 
 func (rc relationControllers) Followers(c *gin.Context) {
-	jwtUserID := utils.ExtractID(c)
 	value := c.Param("id")
 	userID, err := strconv.Atoi(value)
 	if err != nil {
@@ -54,15 +53,10 @@ func (rc relationControllers) Followers(c *gin.Context) {
 		return
 	}
 
-	for _, follower := range followers {
-		follower.SetOwnership(jwtUserID)
-	}
-
 	c.JSON(200, utils.JSON{"followers": followers, "followersCount": len(followers)})
 }
 
 func (rc relationControllers) Subscribers(c *gin.Context) {
-	jwtUserID := utils.ExtractID(c)
 	value := c.Param("id")
 	userID, err := strconv.Atoi(value)
 	if err != nil {
@@ -75,10 +69,6 @@ func (rc relationControllers) Subscribers(c *gin.Context) {
 		slog.Error(err.Error())
 		c.JSON(500, utils.JSON{})
 		return
-	}
-
-	for _, subscriber := range subscribers {
-		subscriber.SetOwnership(jwtUserID)
 	}
 
 	c.JSON(200, utils.JSON{"subscribers": subscribers, "subscribersCount": len(subscribers)})

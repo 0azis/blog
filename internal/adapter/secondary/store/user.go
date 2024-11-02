@@ -20,15 +20,35 @@ func (u user) Create(user domain.User) (int, error) {
 }
 
 func (u user) GetByID(ID int) (domain.User, error) {
-	resultUser := domain.User{}
-	err := u.db.Get(&resultUser, `select * from users where id = ?`, ID)
-	return resultUser, err
+	user := domain.User{}
+	rows, err := u.db.Query(`select users.id, users.email, users.username, users.name, users.avatar, users.description, count(distinct posts.id), count(distinct followers.follower_id), count(distinct subscribers.subscriber_id) from users left join posts on users.id = posts.user_id and posts.public = 1 left join followers on users.id = followers.user_id left join subscribers on users.id = subscribers.user_id where users.id = ? group by users.id`, ID)
+	if err != nil {
+		return user, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&user.ID, &user.Email, &user.Username, &user.Name, &user.Avatar, &user.Description, &user.Counter.Posts, &user.Counter.Followers, &user.Counter.Subscribers)
+		if err != nil {
+			return user, err
+		}
+	}
+	return user, err
 }
 
 func (u user) GetByUsername(username string) (domain.User, error) {
-	resultUser := domain.User{}
-	err := u.db.Get(&resultUser, `select * from users where username = ?`, username)
-	return resultUser, err
+	user := domain.User{}
+	rows, err := u.db.Query(`select users.id, users.email, users.username, users.name, users.avatar, users.description, count(distinct posts.id), count(distinct followers.follower_id), count(distinct subscribers.subscriber_id) from users left join posts on users.id = posts.user_id and posts.public = 1 left join followers on users.id = followers.user_id left join subscribers on users.id = subscribers.user_id where users.username = ? group by users.id`, username)
+	if err != nil {
+		return user, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&user.ID, &user.Email, &user.Username, &user.Name, &user.Avatar, &user.Description, &user.Counter.Posts, &user.Counter.Followers, &user.Counter.Subscribers)
+		if err != nil {
+			return user, err
+		}
+	}
+	return user, err
 }
 
 func (u user) CheckCredentials(email, username string) (domain.User, error) {
@@ -37,10 +57,10 @@ func (u user) CheckCredentials(email, username string) (domain.User, error) {
 	return checkedUser, err
 }
 
-func (u user) Search(q string, limit, page int) ([]*domain.User, error) {
-	resultUser := []*domain.User{}
-	err := u.db.Select(&resultUser, `select * from users where lower(username) LIKE lower(?) or lower(name) like lower(?) limit ? offset ?`, q, q, limit, page)
-	return resultUser, err
+func (u user) Search(q string, limit, page int) ([]*domain.UserCard, error) {
+	users := []*domain.UserCard{}
+	err := u.db.Select(&users, `select * from users where lower(username) LIKE lower(?) or lower(name) like lower(?) limit ? offset ?`, q, q, limit, page)
+	return users, err
 }
 
 func (u user) Update(userID int, updatedData domain.UserPatch) (int, error) {

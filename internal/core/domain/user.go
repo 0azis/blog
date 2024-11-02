@@ -5,14 +5,15 @@ import (
 )
 
 type User struct {
-	ID          int     `json:"id" db:"id"`
-	Email       string  `json:"email" db:"email"`
-	Username    string  `json:"username" db:"username"`
-	Password    string  `json:"-" db:"password"`
-	Name        *string `json:"name" db:"name"`
-	Avatar      *string `json:"avatar" db:"avatar"`
-	Description *string `json:"description" db:"description"`
-	Owner       bool    `json:"owner"`
+	ID          int         `json:"id" db:"id"`
+	Email       string      `json:"email" db:"email"`
+	Username    string      `json:"username" db:"username"`
+	Password    string      `json:"-" db:"password"`
+	Name        *string     `json:"name" db:"name"`
+	Avatar      *string     `json:"avatar" db:"avatar"`
+	Description *string     `json:"description" db:"description"`
+	Counter     UserCounter `json:"counter"`
+	Owner       bool        `json:"owner"`
 }
 
 func (u *User) SetOwnership(jwtUserID int) {
@@ -21,7 +22,13 @@ func (u *User) SetOwnership(jwtUserID int) {
 	}
 }
 
-type Author struct {
+type UserCounter struct {
+	Subscribers int `json:"subscribersCount"`
+	Followers   int `json:"followersCount"`
+	Posts       int `json:"postsCount"`
+}
+
+type UserCard struct {
 	ID       int     `json:"id" db:"id"`
 	Username string  `json:"username" db:"username"`
 	Name     string  `json:"name" db:"name"`

@@ -9,7 +9,7 @@ type Post struct {
 	Title   *string     `json:"title" db:"title"`
 	Date    time.Time   `json:"createdAt" db:"date"`
 	Preview *string     `json:"preview" db:"preview"`
-	Author  Author      `json:"author"`
+	Author  UserCard    `json:"author"`
 	Content *string     `json:"content" db:"content"`
 	Counter PostCounter `json:"counter"`
 	Tags    Tags        `json:"tags"`
