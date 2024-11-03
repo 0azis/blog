@@ -11,6 +11,7 @@ type UserControllers interface {
 	UpdateAccount(c *gin.Context)
 	Logout(c *gin.Context)
 	RefreshTokens(c *gin.Context)
+	SignShitIn(c *gin.Context)
 }
 
 type PostControllers interface {

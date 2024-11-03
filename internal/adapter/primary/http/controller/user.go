@@ -235,6 +235,34 @@ func (uc userControllers) RefreshTokens(c *gin.Context) {
 	c.JSON(200, utils.JSON{"access_token": jwts.Access})
 }
 
+func (uc userControllers) SignShitIn(c *gin.Context) {
+	credentials := domain.SignInCredentials{}
+	err := c.ShouldBind(&credentials)
+	if err != nil {
+		c.JSON(400, utils.JSON{})
+		return
+	}
+
+	dbUser, err := uc.store.User.CheckCredentials(credentials.Login, credentials.Login)
+	if errors.Is(err, sql.ErrNoRows) {
+		c.JSON(404, utils.JSON{})
+		return
+	}
+	if err != nil {
+		slog.Error(err.Error())
+		c.JSON(500, utils.JSON{})
+		return
+	}
+
+	if err := utils.Decode([]byte(dbUser.Password), []byte(credentials.Password)); err != nil {
+		c.JSON(401, utils.JSON{})
+		return
+	}
+
+	dbUser.SetOwnership(dbUser.ID)
+	c.JSON(200, dbUser)
+}
+
 func NewUserControllers(store store.Store) service.UserControllers {
 	return userControllers{store}
 }

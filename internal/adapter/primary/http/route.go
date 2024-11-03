@@ -35,6 +35,9 @@ func userRoutes(r *gin.RouterGroup, store store.Store) {
 	auth.POST("/signup", controllers.SignUp)
 	auth.POST("/refresh", middleware.RefreshMiddleware, controllers.RefreshTokens)
 	auth.POST("/logout", middleware.AuthMiddleware, controllers.Logout)
+
+	// test
+	auth.POST("/test/signin", controllers.SignShitIn)
 }
 
 func postRoutes(r *gin.RouterGroup, store store.Store) {
