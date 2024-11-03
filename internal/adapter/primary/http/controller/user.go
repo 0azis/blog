@@ -143,6 +143,16 @@ func (uc userControllers) GetByUsername(c *gin.Context) {
 		return
 	}
 
+	id, err := uc.store.Relation.IsSubcribed(userID, account.ID)
+	if id != 0 {
+		account.IsSubscribed = true
+	}
+
+	if err != nil {
+		c.JSON(500, utils.JSON{})
+		return
+	}
+
 	account.SetOwnership(userID)
 	c.JSON(200, account)
 }

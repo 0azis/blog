@@ -43,6 +43,7 @@ type RelationRepository interface {
 	Subscribers(userID int) ([]*domain.UserCard, error)
 	Followers(userID int) ([]*domain.UserCard, error)
 	Subscribe(userID, authorID int) error
+	IsSubcribed(userID, authorID int) (int, error)
 }
 
 type TagRepository interface {

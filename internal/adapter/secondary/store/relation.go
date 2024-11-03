@@ -30,3 +30,16 @@ func (r relation) Subscribe(userID, authorID int) error {
 	_, err = r.db.Exec(`insert into subscribers values (?, ?)`, userID, authorID)
 	return err
 }
+
+func (r relation) IsSubcribed(userID, authorID int) (int, error) {
+	var id int
+	rows, err := r.db.Query(`select subscriber_id from subscribers where user_id = ? and subscriber_id = ?`, userID, authorID)
+	if err != nil {
+		return id, err
+	}
+
+	for rows.Next() {
+		err = rows.Scan(&id)
+	}
+	return id, err
+}

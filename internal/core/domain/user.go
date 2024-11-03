@@ -5,15 +5,16 @@ import (
 )
 
 type User struct {
-	ID          int         `json:"id" db:"id"`
-	Email       string      `json:"email" db:"email"`
-	Username    string      `json:"username" db:"username"`
-	Password    string      `json:"-" db:"password"`
-	Name        *string     `json:"name" db:"name"`
-	Avatar      *string     `json:"avatar" db:"avatar"`
-	Description *string     `json:"description" db:"description"`
-	Counter     UserCounter `json:"counter"`
-	Owner       bool        `json:"owner"`
+	ID           int         `json:"id" db:"id"`
+	Email        string      `json:"email" db:"email"`
+	Username     string      `json:"username" db:"username"`
+	Password     string      `json:"-" db:"password"`
+	Name         *string     `json:"name" db:"name"`
+	Avatar       *string     `json:"avatar" db:"avatar"`
+	Description  *string     `json:"description" db:"description"`
+	Counter      UserCounter `json:"counter"`
+	Owner        bool        `json:"owner"`
+	IsSubscribed bool        `json:"isSubscribed"`
 }
 
 func (u *User) SetOwnership(jwtUserID int) {
