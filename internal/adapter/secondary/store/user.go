@@ -2,6 +2,7 @@ package store
 
 import (
 	"blog/internal/core/domain"
+	"blog/internal/core/utils"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -57,9 +58,9 @@ func (u user) CheckCredentials(email, username string) (domain.User, error) {
 	return checkedUser, err
 }
 
-func (u user) Search(q string, limit, page int) ([]*domain.UserCard, error) {
+func (u user) Search(queryMap *utils.QueryMap) ([]*domain.UserCard, error) {
 	users := []*domain.UserCard{}
-	err := u.db.Select(&users, `select * from users where lower(username) LIKE lower(?) or lower(name) like lower(?) limit ? offset ?`, q, q, limit, page)
+	err := u.db.Select(&users, `select users.id, users.username, users.name, users.avatar from users where lower(username) LIKE lower(?) or lower(name) like lower(?) limit ? offset ?`, queryMap.Queries["q"], queryMap.Queries["q"], queryMap.Pq.Limit, queryMap.Pq.Offset)
 	return users, err
 }
 

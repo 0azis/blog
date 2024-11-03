@@ -207,15 +207,39 @@ func (pc postControllers) MyPosts(c *gin.Context) {
 }
 
 func (pc postControllers) GetPosts(c *gin.Context) {
-	// tag := c.Query("tag")
-	// sort := c.Query("sort")
-	q := utils.QueryMap{}
+	q := map[string]string{}
 	err := c.BindQuery(&q)
 	if err != nil {
-		c.JSON(500, utils.JSON{"err": err})
+		c.JSON(400, utils.JSON{})
 		return
 	}
-	c.JSON(200, q)
+	queryMap := utils.NewQueryMap(q)
+
+	_, ok := queryMap.Queries["sort"]
+	if !ok {
+		queryMap.Set("sort", "popular")
+	}
+
+	queryMap.SetPaginate()
+
+	posts, err := pc.store.Post.GetPosts(queryMap)
+	if err != nil {
+		slog.Error(err.Error())
+		c.JSON(500, utils.JSON{})
+		return
+	}
+
+	for _, post := range posts {
+		tags, err := pc.store.Tag.GetByPostID(post.ID)
+		if err != nil {
+			c.JSON(500, utils.JSON{})
+			return
+		}
+
+		post.Tags = tags
+	}
+
+	c.JSON(200, utils.JSON{"posts": posts, "postsCount": len(posts)})
 }
 
 func (pc postControllers) Publish(c *gin.Context) {

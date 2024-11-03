@@ -1,6 +1,9 @@
 package repository
 
-import "blog/internal/core/domain"
+import (
+	"blog/internal/core/domain"
+	"blog/internal/core/utils"
+)
 
 type UserRepository interface {
 	// Create user in database
@@ -12,7 +15,7 @@ type UserRepository interface {
 	// GetByEmail returns userID by its email
 	CheckCredentials(email, username string) (domain.User, error)
 	// GetByusername get user by its username
-	Search(q string, limit, page int) ([]*domain.UserCard, error)
+	Search(queryMap *utils.QueryMap) ([]*domain.UserCard, error)
 	// Update
 	Update(userID int, updatedData domain.UserPatch) (int, error)
 }
@@ -28,8 +31,8 @@ type PostRepositoty interface {
 	GetDrafts(userID int) ([]*domain.Post, error)
 	// GetDraft
 	GetDraft(userID, postID int) (domain.Post, error)
-	// GetByTag
-	GetByTag(tag string) ([]*domain.Post, error)
+	// GetPosts
+	GetPosts(queryMap *utils.QueryMap) ([]*domain.Post, error)
 	// Publish
 	Publish(postID, userID int) (int, error)
 	// Update

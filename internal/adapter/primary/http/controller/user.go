@@ -155,18 +155,19 @@ func (uc userControllers) Search(c *gin.Context) {
 		c.JSON(400, utils.JSON{})
 		return
 	}
-	queryMap := utils.NewQueryMapper(q)
-	paginationQueries, err := queryMap.PaginationQuery()
+
+	queryMap := utils.NewQueryMap(q)
+	err = queryMap.SetPaginate()
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(400, utils.JSON{})
 		return
 	}
 
-	query := c.Query("q")
-	search_query := "%" + query + "%"
+	search_query := "%" + queryMap.Queries["q"] + "%"
+	queryMap.Set("q", search_query)
 
-	queryUsers, err := uc.store.User.Search(search_query, paginationQueries["limit"], paginationQueries["page"])
+	queryUsers, err := uc.store.User.Search(queryMap)
 	if err != nil {
 		slog.Error(err.Error())
 		c.JSON(500, utils.JSON{})
